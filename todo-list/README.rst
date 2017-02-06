@@ -11,21 +11,21 @@ Installation
 You can create an appropriate environment with the following
 `EDM commands <http://docs.enthought.com/edm/>`_:
 
-..code-block:: console
+..code-block :: console
 
     edm install -e todo-list traitsui pyqt
     edm run -e todo-list pip install .
 
 and you can switch into that environment with:
 
-..code-block:: console
+..code-block :: console
 
     edm shell -e todo-list
 
 If you prefer to use ``pip``, you can install into an existing environment
 with:
 
-..code-block:: console
+..code-block :: console
 
     pip install .[pyqt]
 
@@ -36,7 +36,7 @@ Once installed in an active environment, the application ise run via the
 ``todo-list`` command.  Initial to-do items can be specified via one or more
 ``--todo`` commandline arguments, eg.:
 
-..code-block:: console
+..code-block :: console
 
     todo-list --todo "first thing" --todo "second thing"
 
