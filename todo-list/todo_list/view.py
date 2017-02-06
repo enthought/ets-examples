@@ -169,3 +169,7 @@ class ToDoListModelView(ModelView):
             return '1 item remaining'
         else:
             return '{} items remaining'.format(remaining)
+
+    # Default TraitsUI view --------------------------------------------------
+
+    traits_view = todo_list_view
