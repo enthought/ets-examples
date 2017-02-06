@@ -9,23 +9,23 @@ a simple to-do list application.
 from __future__ import absolute_import, print_function, unicode_literals
 
 from traits.api import (
-    Bool, HasTraits, Instance, Int, List, Property, Unicode, on_trait_change)
+    Bool, HasStrictTraits, Instance, Int, List, Property, Str, on_trait_change)
 
 
-class ToDoItem(HasTraits):
+class ToDoItem(HasStrictTraits):
     """ A task in a to-do list.
 
     A to-do item has a description and a completed flag as its state.
     """
 
     #: The description of the task.
-    description = Unicode
+    description = Str
 
     #: Whether or no the task has been completed.
     completed = Bool
 
 
-class ToDoList(HasTraits):
+class ToDoList(HasStrictTraits):
     """ A list of tasks that need to be done.
 
     This provides a list of :py:class:`ToDoItem` instances, as well as a list
