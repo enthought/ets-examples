@@ -3,7 +3,6 @@ from future.builtins import super
 
 import numpy as np
 
-from chaco.api import DataRange1D
 from chaco.abstract_colormap import AbstractColormap
 from enable.api import Component
 from traits.api import ArrayOrNone, Bool, Float, Instance, Int, Tuple, on_trait_change
@@ -84,7 +83,7 @@ class ImageDataComponent(Component):
             self.color_map.range.low_setting = low
             self.color_map.range.high_setting = high
 
-        self._cached_image = self.image_data.to_rgb(self.color_map)
+        self._cached_image = self.image_data.to_rgb(self.color_map.map_screen)
         self._cache_valid = True
         self._visible_cache_valid = False
 
@@ -123,11 +122,11 @@ class ImageDataComponent(Component):
             # nothing to see here
             return None, (0, 0, 0, 0)
 
-        #
+        # handle slicing the plane of interest out of the image
         image = self._cached_image
         if image.ndim == 5:
             image = image[self.time_slice]
-        if image.ndim == 4:
+        if image.ndim >= 4:
             image = image[self.plane_slice]
 
         # origin is top-left, get corners relative to fixed point
@@ -137,9 +136,10 @@ class ImageDataComponent(Component):
 
         scale = self.scale
         offset = np.array(self.offset)
-        bounds = np.array(image.shape[1::-1])
+        # add 1 to shape because bounds are measured at pixel edges
+        bounds = np.array(image.shape[1::-1]) + 1
 
-        # apply scale and offset, widening to
+        # apply scale and offset, widening to pixel boundaries
         c1, r1 = bottom_left = np.clip(np.floor(
             (bottom_left - offset)/scale), 0, bounds).astype(int)
         c2, r2 = top_right = np.clip(np.ceil(
@@ -180,7 +180,7 @@ class ImageDataComponent(Component):
     @on_trait_change('+invalidate_cache')
     def _invalidate_cache(self):
         self._cache_valid = False
-        self.request_redraw()
+        self.invalidate_and_redraw()
 
     @on_trait_change('bounds,+invalidate_visible_cache')
     def _invalidate_visible_cache(self):

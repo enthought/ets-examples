@@ -33,6 +33,11 @@ class SimpleOperation(HasTraits):
     #: A callable that returns whether the image_data matches what is needed.
     is_available = Callable(lambda image_data: True)
 
+    def __init__(self, function, **traits):
+        traits.setdefault('name', function.__name__)
+        traits['function'] = function
+        super().__init__(**traits)
+
     def __call__(self, image_data, parameters):
         if parameters is not None:
             args, kwargs = parameters.to_function_args()
@@ -45,11 +50,6 @@ class SimpleOperation(HasTraits):
         else:
             color_space = self.color_space
         return ArrayImageData(data=data, color_space=color_space)
-
-    def __init__(self, function, **traits):
-        traits.setdefault('name', function.__name__)
-        traits['function'] = function
-        super().__init__(**traits)
 
     def to_script(self, image_name, parameters):
         if parameters is not None:

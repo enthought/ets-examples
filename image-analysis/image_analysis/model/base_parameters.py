@@ -11,8 +11,8 @@ class BaseParameters(HasStrictTraits):
     def to_function_args(self):
         """ Convert the parameters to positional and keyword arguments.
 
-        By default this constructs kword arguments out of all traits where the
-        'parameter' metadata is True.
+        By default this constructs keyword arguments out of all traits where
+        the 'parameter' metadata is True.
 
         Returns
         -------

@@ -16,7 +16,7 @@ class IOperation(Interface):
         """ Can the operation be used on this image data? """
         raise NotImplementedError()
 
-    def __call__(self, image_data, paramters):
+    def __call__(self, image_data, parameters):
         raise NotImplementedError()
 
     def to_script(self, image_name, parameters):

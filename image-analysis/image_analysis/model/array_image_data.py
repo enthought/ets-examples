@@ -8,12 +8,13 @@ from skimage import img_as_ubyte
 from skimage.color import gray2rgb
 
 from traits.api import (
-    Array, ArrayOrNone, Enum, HasStrictTraits, Instance, Property, Tuple,
-    cached_property, provides)
+    Array, ArrayOrNone, HasStrictTraits, Instance, Property, Tuple,
+    cached_property, provides
+)
 
 from .i_color_space import IColorSpace
 from .i_image_data import IImageData
-from .rgb_color_space import rgb_color_space
+from .rgb_color_space import rgb_color_space, rgba_color_space
 from .model_traits import Size
 
 
@@ -55,9 +56,9 @@ class ArrayImageData(HasStrictTraits):
 
         Parameters
         ----------
-        color_map : AbstractColorMap instance
-            An optional color_map to apply to the data.  Implementers of this
-            method should do something sensible with a color_map value of None.
+        color_map : callable
+            An optional color_map to apply to greyscale data.  If this is not
+            supplied then greyscale data will be converted with .
 
         Returns
         -------
@@ -74,7 +75,7 @@ class ArrayImageData(HasStrictTraits):
                 self._rgb_data = img_as_ubyte(gray2rgb(self.data))
             return self._rgb_data
         else:
-            return img_as_ubyte(color_map.map_screen(self.data))
+            return img_as_ubyte(color_map(self.data))
 
     # ------------------------------------------------------------------------
     # object interface
@@ -89,7 +90,12 @@ class ArrayImageData(HasStrictTraits):
     # ------------------------------------------------------------------------
 
     def _color_space_default(self):
-        return rgb_color_space
+        if len(self.data.shape) >= 3:
+            if self.data.shape[-1] == 3:
+                return rgb_color_space
+            elif self.data.shape[-1] == 4:
+                return rgba_color_space
+        return None
 
     # trait property handlers ------------------------------------------------
 
@@ -111,7 +117,7 @@ class ArrayImageData(HasStrictTraits):
     def _get_range(self):
         shape = self.data.shape[self.n_dim:]
         if issubclass(self.type, np.floating):
-            if any(self.data < 0):
+            if np.any(self.data < 0):
                 return (
                     np.full(shape, -1.0, dtype=self.type),
                     np.ones(shape=shape, dtype=self.type)

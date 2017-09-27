@@ -43,9 +43,10 @@ class IImageData(Interface):
 
         Parameters
         ----------
-        color_map : AbstractColorMap instance
-            An optional color_map to apply to the data.  Implementers of this
-            method should do something sensible with a color_map value of None.
+        color_map : callable
+            An optional color_map to apply to greyscale data.  Implementers of
+            this method should do something sensible with a color_map value of
+            None.
 
         Returns
         -------

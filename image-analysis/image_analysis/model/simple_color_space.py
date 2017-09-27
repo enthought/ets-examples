@@ -50,7 +50,14 @@ class SimpleColorSpace(HasStrictTraits):
         array : array
             A numpy array of the appropriate type.
         """
-        return convert_colorspace(rgb_data, 'rgb', self.name)
+        if rgb_data.shape[-1] == 3:
+            return convert_colorspace(rgb_data, 'rgb', self.name)
+        elif rgb_data.shape[-1] == 4:
+            return convert_colorspace(rgb_data[..., :3], 'rgb', self.name)
+        else:
+            msg = "Expected last dimesnions of size 3 or 4, given {}"
+            raise ValueError(msg.format(rgb_data.shape[-1]))
+
 
 
 # standard color space instances
