@@ -11,9 +11,6 @@
 # Thanks for using Enthought open source!
 
 """
-To-Do List Model Classes
-========================
-
 This module provides two classes that together provide the business logic for
 a simple to-do list application.
 """
