@@ -11,9 +11,6 @@
 # Thanks for using Enthought open source!
 
 """
-To-Do List UI Classes
-=====================
-
 This module provides the UI classes that provide the UI logic and views for
 a simple to-do list application.  This is a fairly simple UI, with each item
 displayed in a list editor, and a toggle to allow the user to switch between

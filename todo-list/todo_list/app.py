@@ -11,9 +11,6 @@
 # Thanks for using Enthought open source!
 
 """
-Application Main
-================
-
 This module provides the application infrastructure to run the to-do list
 application.  It parses command-line arguments into to do items and starts
 the TraitsUI application.
@@ -27,7 +24,11 @@ from todo_list.model import ToDoList, ToDoItem
 
 
 def handle_arguments():
-    """ Parse commandline arguments and return list of items """
+    """ Parse commandline arguments and return list of items
+
+    Allowed arguments are as many ``--todo`` optional arguments followed
+    by the text of an item.
+    """
     parser = argparse.ArgumentParser(
         description='To-do list TraitsUI application.'
     )
@@ -43,7 +44,7 @@ def handle_arguments():
 
 
 def main():
-    """ The application entrypoint """
+    """ The application entry-point """
     # set up the model
     todo_list = ToDoList(
         items=[ToDoItem(description=item) for item in handle_arguments()]
