@@ -17,6 +17,7 @@ Contents
    :maxdepth: 2
 
    todo-list.rst
+   cellular-automata.rst
 
 
 Indices and tables
