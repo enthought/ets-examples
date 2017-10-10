@@ -8,7 +8,7 @@ image_namespace = ImageNamespace(
         'coins': ArrayImageData(coins()),
         'astronaut':  ArrayImageData(astronaut())
     },
-    active_image='coins'
+    active_image_name='coins'
 )
 
 model_view = ImageView(model=image_namespace)

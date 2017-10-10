@@ -111,7 +111,7 @@ class ImageView(ModelView):
     def _images_updated(self, event):
         self.names = sorted(self.model.images)
         if self.name in event.removed:
-            self.name = self.model.images.active_image
+            self.name = self.model.images.active_image_name
 
     @on_trait_change('color_map_name')
     def _color_map_name_updated(self):
@@ -139,7 +139,7 @@ class ImageView(ModelView):
         return sorted([unicode(f.__name__) for f in color_map_functions])
 
     def _name_default(self):
-        return self.model.active_image
+        return self.model.active_image_name
 
     def _names_default(self):
         return sorted(self.model.images)
