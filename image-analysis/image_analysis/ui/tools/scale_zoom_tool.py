@@ -30,7 +30,8 @@ class ScaleZoomTool(BaseTool):
         """ Zoom using the mouse wheel. """
         zoom_factor = 1.0 + (event.mouse_wheel*self.zoom_scale)
         new_scale = self.component.scale * zoom_factor
-        self.component.scale = clip(new_scale, self.min_scale, self.max_scale)
+        scale = clip(new_scale, self.min_scale, self.max_scale)
+        self.component.rescale(scale, (event.x, event.y))
         event.handled = True
 
     def normal_key_released(self, event):
@@ -51,7 +52,7 @@ class ScaleZoomTool(BaseTool):
         else:
             return
 
-        self.component.scale = new_scale
+        self.component.rescale(new_scale)
         event.handled = True
 
     @cached_property

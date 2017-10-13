@@ -93,7 +93,7 @@ class ImageView(ModelView):
 
     def object_scale_changed(self, ui_info):
         try:
-            self.component.scale = float(self.scale.replace('%', ''))/100.0
+            self.component.rescale(float(self.scale.replace('%', ''))/100.0)
         except ValueError:
             pass
 

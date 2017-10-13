@@ -19,7 +19,8 @@ class ImageDataComponent(Component):
     #: The scale factor of the image display.
     scale = Float(1.0, invalidate_visible_cache=True)
 
-    #: The x, y offset of the image.
+    #: The x, y offset of the bottom left of the image relative to the top left
+    #: of the component.
     offset = Tuple(Float, Float, invalidate_visible_cache=True)
 
     #: The color map to use for the display when not using RGB.
@@ -45,6 +46,35 @@ class ImageDataComponent(Component):
 
     #: The cached destination rectangle.
     _cached_rect = Tuple(Float, Float, Float, Float)
+
+    def rescale(self, scale, center=None):
+        """ Rescale the image relative to a central point.
+
+        Parameters
+        ----------
+        scale : float
+            The new scale factor for the component.
+        center : tuple of x, y
+            The fixed point of the zoom in component coordinates.  If not
+            supplied, then the center of the component will be used.
+        """
+        if center is None:
+            center = np.array([self.x2, self.y2])/2.0
+        else:
+            center = np.array(center)
+
+        # shift center into top-left based coordinates
+        origin = np.array([self.x, self.y2])
+        center = center - origin
+
+        # scale offset relative to center point
+        old_scale = self.scale
+        offset = np.array(self.offset)
+        new_offset = tuple(scale * (offset - center)/old_scale) + center
+
+        # change scale and offset
+        self.offset = tuple(new_offset.tolist())
+        self.scale = scale
 
     # ------------------------------------------------------------------------
     # Component interface
@@ -172,10 +202,6 @@ class ImageDataComponent(Component):
         bounds = -self.scale * (np.array(self.image_data.size[:-3:-1]) + 1)
         if ((0 > offset) | (offset > bounds)).any():
             self.offset = (0, bounds[1])
-
-    def _scale_changed(self, old, new):
-        """ When the scale changes, adjust the offset to adjust """
-        self.offset = tuple(new * np.array(self.offset)/old)
 
     @on_trait_change('+invalidate_cache')
     def _invalidate_cache(self):
