@@ -39,7 +39,7 @@ class ScaleZoomTool(BaseTool):
         if event.alt_down or event.control_down:
             return
 
-        if event.character == '+':
+        if event.character == '=' or event.character == '+':
             zoom_index = bisect_right(self.scale_steps, self.component.scale)
             if zoom_index >= len(self.scale_steps):
                 return
