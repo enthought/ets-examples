@@ -34,7 +34,7 @@ class ScaleZoomTool(BaseTool):
         self.component.rescale(scale, (event.x, event.y))
         event.handled = True
 
-    def normal_key_released(self, event):
+    def normal_key_pressed(self, event):
         """ Zoom using '+' or '-' keys. """
         if event.alt_down or event.control_down:
             return
