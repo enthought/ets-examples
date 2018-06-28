@@ -53,13 +53,10 @@ setup(
     packages=find_packages(),
     install_requires=[
         'scipy',
-        'chaco>=4.6',
         'pillow>=3.1',
     ],
     extras_require={
-        'wx': ['wxpython>=2.8.10'],
-        'pyqt': ['pyqt>=4.10', 'pygments'],
-        'pyside': ['pyside>=1.2', 'pygments'],
+        'examples': ['click', 'joblib', 'matplotlib'],
     },
     entry_points={
         'gui_scripts': [],

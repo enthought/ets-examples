@@ -10,7 +10,7 @@ Installation
 You can create an appropriate environment with the following
 `EDM commands <http://docs.enthought.com/edm/>`_::
 
-    edm install -e cellular-automata chaco scipy pyqt
+    edm install -e cellular-automata scipy joblib click matplotlib
     edm run -e cellular-automata pip install .
 
 and you can switch into that environment with::
@@ -20,7 +20,7 @@ and you can switch into that environment with::
 If you prefer to use ``pip``, you can install into an existing environment
 with::
 
-    pip install .[pyqt]
+    pip install .[examples]
 
 Usage
 -----
