@@ -27,8 +27,7 @@ from traits.api import (
 from traitsui.api import (
     ButtonEditor, Controller, HGroup, InstanceEditor, Item, ListEditor,
     ModelView, Spring, VGroup, View)
-from traitsui.menu import (
-    Action, ActionGroup, Menu, MenuBar, RedoAction, UndoAction)
+from traitsui.menu import Action, ActionGroup, Menu, MenuBar
 
 from .model import ToDoItem, ToDoList
 
@@ -45,7 +44,6 @@ new_item_action = Action(
 
 menubar = MenuBar(
     Menu(
-        ActionGroup(UndoAction, RedoAction, name='undo_group'),
         ActionGroup(new_item_action, name='list_group'),
         name='Edit',
     ),
