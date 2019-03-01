@@ -31,7 +31,7 @@ except ImportError:
         """ A dummy password strength tester. """
         if password == "12345":
             return {
-                'strength': 0,
+                'score': 0,
                 'feedback': {
                     'suggestions': [
                         "12345? Amazing, I have the same combination on my luggage"
@@ -40,14 +40,14 @@ except ImportError:
             }
         elif len(password) < 16:
             return {
-                'strength': len(password) // 4,
+                'score': len(password) // 4,
                 'feedback': {
                     'suggestions': ["Type more characters"]
                 }
             }
         else:
             return {
-                'strength': 4,
+                'score': 4,
                 'feedback': {'suggestions': []}
             }
 
