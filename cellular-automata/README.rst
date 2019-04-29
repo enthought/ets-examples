@@ -22,12 +22,6 @@ with::
 
     pip install .[examples]
 
-Usage
------
-
-Design Notes
-------------
-
 License
 -------
 
