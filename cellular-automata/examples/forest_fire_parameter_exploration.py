@@ -3,8 +3,7 @@ import numpy as np
 from cellular_automata.automata_recorder import AutomataRecorder, count_states
 from cellular_automata.cellular_automaton import CellularAutomaton
 from cellular_automata.rules.change_state_rule import ChangeStateRule
-from cellular_automata.rules.forest import SlowBurnRule, BurnGrovesRule, MoldRule
-#from cellular_automata.io.image import save_image_sequence
+from cellular_automata.rules.forest import BurnGrovesRule, MoldRule
 
 
 def simulation(p_mold, size, steps, transform=None):
@@ -15,12 +14,6 @@ def simulation(p_mold, size, steps, transform=None):
         to_state=1,
         p_change=0.0025
     )
-    # lightning = ChangeStateRule(
-    #     from_state=1,
-    #     to_state=2,
-    #     p_change=1e-5,
-    # )
-    # burn = SlowBurnRule()
     burn_groves = BurnGrovesRule()
     mold = MoldRule(dead_state=3, p_mold=p_mold)
     mold_die = ChangeStateRule(
@@ -46,14 +39,6 @@ def simulation(p_mold, size, steps, transform=None):
 
     return recorder.as_array()[:, 1:4].T
 
-
-#
-# palette = np.zeros((256, 3), dtype='uint8')
-# palette[1] = [0, 255, 0]
-# palette[2] = [255, 0, 0]
-# palette[3] = [255, 255, 255]
-#
-# save_image_sequence(recorder, 'test.gif', palette, 100)
 
 if __name__ == '__main__':
     from joblib import Parallel, delayed

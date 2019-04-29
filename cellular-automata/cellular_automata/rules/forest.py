@@ -53,7 +53,7 @@ class BurnRule(StructureRule):
         return FIRE_STRUCTURE
 
 
-class SlowBurnRule(StructureRule):
+class SlowBurnRule(BurnRule):
     """ A rule that sets on fire burnable cells that neighbour a burning cell.
 
     Neighbouring cells are determined by a connectivity structure.  Cells which
@@ -69,7 +69,7 @@ class SlowBurnRule(StructureRule):
     # ------------------------------------------------------------------------
 
     def step(self, states):
-        states = super(BurnRule, self).step(states)
+        states = super(SlowBurnRule, self).step(states)
 
         burning = (states == self.burning_state)
         burnable_mask = (states == self.burnable_state)
@@ -82,6 +82,7 @@ class SlowBurnRule(StructureRule):
         states[burning] = self.burnt_state
 
         return states
+
 
 class BurnGrovesRule(BurnRule):
     """ A rule that burns down entire burnable connected components.
