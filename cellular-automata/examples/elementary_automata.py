@@ -11,6 +11,9 @@
 # Thanks for using Enthought open source!
 
 """
+Elementary 1D Cellular Automata
+===============================
+
 This script demonstrates the basic use of the cellular_automata library to
 display `Elementary 1D Cellular Automata
 <https://https://en.wikipedia.org/wiki/Elementary_cellular_automaton>`_ at the
@@ -40,6 +43,7 @@ def main(rule, size, pattern, boundary, ticks):
     # setup simulation
     rule = Elementary1DRule(rule_number=rule, boundary=boundary)
     pattern_overlay = PatternOverlay(pattern=pattern)
+
     world = CellularAutomaton(
         shape=(size,),
         initializers=[pattern_overlay],
@@ -54,6 +58,7 @@ def main(rule, size, pattern, boundary, ticks):
     for i in range(ticks):
         world.step()
         print(automaton_to_text(world))
+
 
 if __name__ == '__main__':
     main()

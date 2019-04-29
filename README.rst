@@ -16,6 +16,19 @@ a GUI that goes with it.  This example demonstrates:
 * TraitsUI handlers.
 * simple TraitsUI Action usage.
 
+Cellular Automation Library
+---------------------------
+
+A Traits library that provides tools to explore and run various cellular
+automaton simulations (such as  Conway's "game of life").  This example
+demonstrates
+
+* a moderately complex Traits model for "business logic".
+* using abstract base classes with Traits to specify interfaces.
+* using composition rather than inheritance to produce behaviours.
+* using Traits notification system to observe model state independent
+  without the model needing to specifically support observation.
+
 License
 -------
 

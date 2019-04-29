@@ -88,7 +88,7 @@ def _save_animated_gif(arrays, filename, palette=None, duration=50):
         image = Image.fromarray(array, mode)
         if mode == 'P':
             palette = np.array(palette, dtype='uint8').ravel()
-            image.putpalette(palette)
+            image.putpalette(palette.tobytes())
         images.append(image)
 
     images[0].save(

@@ -8,7 +8,7 @@ Cellular Automata Library
 This example shows how to build a library using Traits for the object models.
 The key design patterns are:
 
-* use of :py:class:`ABCStrictHasTraits` to specify interfaces and basic
+* use of :py:class:`ABCHasStrictTraits` to specify interfaces and basic
   implementation and subclasses to provide particular implementations.  In
   particular look at :py:class:`.AbstractRule` and the various classes defined
   in :py:mod:`cellular_automata.rules` to see this pattern in action.
