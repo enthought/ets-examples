@@ -1,4 +1,3 @@
-#
 # Copyright (c) 2017, Enthought, Inc.
 # All rights reserved.
 #
