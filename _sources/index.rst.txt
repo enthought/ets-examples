@@ -10,6 +10,6 @@ Welcome to ETS Examples
 Documentation
 =============
 
-* `Current (0.1.0) <current/index.html>`_ Released 30th April, 2019
+* `Current <current/index.html>`_  (|version|) - Released 30th April, 2019
 
 .. include:: ../../README.rst
