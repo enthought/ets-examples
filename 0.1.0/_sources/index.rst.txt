@@ -4,8 +4,9 @@
    contain the root `toctree` directive.
 
 
-ETS Examples
-============
+====================================
+ETS Examples |release| Documentation
+====================================
 
 This project is a collection of examples showing how the Enthought Tool Suite
 packages can work together.
