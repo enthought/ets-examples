@@ -1,9 +1,9 @@
 ETS Examples
 ============
 
-Examples showing how the Enthought Tool Suite packages can work together.
-The following examples are available, in rough order from simplest to most
-complex.
+This project is a collection of examples showing how the Enthought Tool Suite
+packages can work together.  The following examples are available, in order
+from simplest to most complex.
 
 To-Do List Application
 ----------------------
@@ -26,11 +26,11 @@ demonstrates
 * a moderately complex Traits model for "business logic".
 * using abstract base classes with Traits to specify interfaces.
 * using composition rather than inheritance to produce behaviours.
-* using Traits notification system to observe model state independent
+* using Traits notification system to observe model state independently
   without the model needing to specifically support observation.
 
 License
--------
+=======
 
 This software is provided without warranty under the terms of the BSD
 license included in LICENSE.txt and may be redistributed only
