@@ -3,9 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-============
-ETS Examples
-============
+
+====================================
+ETS Examples |release| Documentation
+====================================
 
 This project is a collection of examples showing how the Enthought Tool Suite
 packages can work together.
@@ -19,7 +20,6 @@ Contents
    todo-list.rst
    cellular-automata.rst
 
-
 Indices and tables
 ==================
 
@@ -28,7 +28,6 @@ Indices and tables
 * :ref:`search`
 
 License
-=======
+-------
 
-
-.. include:: ../../LICENSE.txt
+.. include:: ../../../LICENSE.txt
