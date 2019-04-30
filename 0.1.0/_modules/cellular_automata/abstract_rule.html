@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>cellular_automata.abstract_rule &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="../../_static/img/favicon.ico">
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="../../index.html" >
+    <link rel="up" title="Module code" href="../index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">ETS Examples 0.1.0 documentation</a></li>
+	
+          <li class="active"><a href="../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for cellular_automata.abstract_rule</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017, Enthought, Inc.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is provided without warranty under the terms of the BSD</span>
+<span class="c1"># license included in LICENSE.txt and may be redistributed only</span>
+<span class="c1"># under the conditions described in the aforementioned license.  The license</span>
+<span class="c1"># is also available online at http://www.enthought.com/licenses/BSD.txt</span>
+<span class="c1">#</span>
+<span class="c1"># Thanks for using Enthought open source!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides the abstract base class to use for all cellular automata</span>
+<span class="sd">rules.  Rules must have a step function that transforms the old states array</span>
+<span class="sd">to a new states array.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="k">import</span> <span class="n">ABCHasStrictTraits</span>
+
+
+<div class="viewcode-block" id="AbstractRule"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.abstract_rule.AbstractRule">[docs]</a><span class="k">class</span> <span class="nc">AbstractRule</span><span class="p">(</span><span class="n">ABCHasStrictTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Abstract bace class for cellular automata rules. &quot;&quot;&quot;</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># AbstractRule interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="AbstractRule.step"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.abstract_rule.AbstractRule.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Apply the rule for a single step.</span>
+
+<span class="sd">        The default rule does nothing but validate inputs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        states : array</span>
+<span class="sd">            An array holding the current states of the automaton.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        states : array</span>
+<span class="sd">            The new states of the automaton after the rule has been applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_states</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">states</span></div>
+
+<div class="viewcode-block" id="AbstractRule.check_states"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.abstract_rule.AbstractRule.check_states">[docs]</a>    <span class="k">def</span> <span class="nf">check_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Check that the state matches what the rule expects as input.</span>
+
+<span class="sd">        This can be used to check that the dimensionality of the state is</span>
+<span class="sd">        expected.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        states : array</span>
+<span class="sd">            An array holding the current state of the automaton.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the states are not compatible with the rule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/img/e-logo.png" alt="Logo">
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

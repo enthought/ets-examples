@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Cellular Automata Library &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
+    <link rel="stylesheet" href="_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="_static/img/favicon.ico">
+    <link rel="index" title="Index" href="genindex.html" >
+    <link rel="search" title="Search" href="search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="index.html" >
+    <link rel="next" title="Internationalization and Localization" href="i18n.html" >
+    <link rel="prev" title="To-do List Application" href="todo-list.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="index.html">ETS Examples 0.1.0 documentation</a></li>
+	 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="i18n.html" title="Internationalization and Localization"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="todo-list.html" title="To-do List Application"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="cellular-automata-library">
+<h1>Cellular Automata Library<a class="headerlink" href="#cellular-automata-library" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="_images/cellular-automata.gif"><img alt="_images/cellular-automata.gif" src="_images/cellular-automata.gif" style="height: 435px;" /></a>
+<p>This example shows how to build a library using Traits for the object models.
+The key design patterns are:</p>
+<ul class="simple">
+<li>use of <code class="xref py py-class docutils literal"><span class="pre">ABCHasStrictTraits</span></code> to specify interfaces and basic
+implementation and subclasses to provide particular implementations.  In
+particular look at <a class="reference internal" href="#cellular_automata.abstract_rule.AbstractRule" title="cellular_automata.abstract_rule.AbstractRule"><code class="xref py py-class docutils literal"><span class="pre">AbstractRule</span></code></a> and the various classes defined
+in <code class="xref py py-mod docutils literal"><span class="pre">cellular_automata.rules</span></code> to see this pattern in action.</li>
+<li>use of traits listeners to handle collecting the history and statistics of
+a simulation, rather than writing particular classes to handle this.  In
+particular look at the interaction between <a class="reference internal" href="#cellular_automata.automata_recorder.AutomataRecorder" title="cellular_automata.automata_recorder.AutomataRecorder"><code class="xref py py-class docutils literal"><span class="pre">AutomataRecorder</span></code></a> and
+<a class="reference internal" href="#cellular_automata.cellular_automaton.CellularAutomaton" title="cellular_automata.cellular_automaton.CellularAutomaton"><code class="xref py py-class docutils literal"><span class="pre">CellularAutomaton</span></code></a>.</li>
+<li>use of composition of behaviours to extend capabilties, rather than
+subclassing.  For example, rather than having a separate class for each type
+of cellular automaton, behaviours are factored out into separate rule classes
+with simple behaviour and the cellular automaton gets a list of rules that
+in aggregate define its behaviour.  This allows significant increased
+flexibility, including the ability to change the rules dynamically (eg.
+a game of life automata can be changed mid-run to a forest fire simulation
+if desired).  This is particularly powerful when combined with a GUI.</li>
+</ul>
+<div class="section" id="module-cellular_automata">
+<span id="cellular-automata-library-documentation"></span><h2>Cellular Automata Library Documentation<a class="headerlink" href="#module-cellular_automata" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-cellular_automata.cellular_automaton">
+<span id="module-cellular-automata-cellular-automaton"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.cellular_automaton</span></code><a class="headerlink" href="#module-cellular_automata.cellular_automaton" title="Permalink to this headline">¶</a></h3>
+<p>This module contains the main class for a cellular automata simulation.</p>
+<dl class="class">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton">
+<em class="property">class </em><code class="descname">CellularAutomaton</code><span class="sig-paren">(</span><em>**traits</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/cellular_automaton.html#CellularAutomaton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for general cellular automata.</p>
+<p>The class holds array of unsigned bytes where the labels are intended to be
+different states that the cell can take.  States have human readable
+names associated with them.  The states evolve via a list of rules, applied
+in order, which manipulate the state array.</p>
+<dl class="attribute">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.initializers">
+<code class="descname">initializers</code><em class="property"> = List(Instance(AbstractInitializer))</em><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.initializers" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of initializers to apply, in order.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/cellular_automaton.html#CellularAutomaton.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the simulation to a pre-start state.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.rules">
+<code class="descname">rules</code><em class="property"> = List(Instance(AbstractRule))</em><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of rules to apply, in order.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.shape">
+<code class="descname">shape</code><em class="property"> = Property(depends_on='states')</em><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shape of the array</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/cellular_automaton.html#CellularAutomaton.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the initial states of the automaton.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.states">
+<code class="descname">states</code><em class="property"> = Array(dtype='uint8')</em><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.states" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array holding the states of the cellular automata.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.step">
+<code class="descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/cellular_automaton.html#CellularAutomaton.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance the cellular automaton one step through time.</p>
+<p>This will change the states array after all rules have had a chance to
+apply their changes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.cellular_automaton.CellularAutomaton.tick">
+<code class="descname">tick</code><em class="property"> = Int(-1)</em><a class="headerlink" href="#cellular_automata.cellular_automaton.CellularAutomaton.tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current time tick.  Listen to this for updates to the automaton.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.abstract_initializer">
+<span id="module-cellular-automata-abstract-initializer"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.abstract_initializer</span></code><a class="headerlink" href="#module-cellular_automata.abstract_initializer" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="cellular_automata.abstract_initializer.AbstractInitializer">
+<em class="property">class </em><code class="descname">AbstractInitializer</code><a class="reference internal" href="_modules/cellular_automata/abstract_initializer.html#AbstractInitializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.abstract_initializer.AbstractInitializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for states intializers.</p>
+<dl class="method">
+<dt id="cellular_automata.abstract_initializer.AbstractInitializer.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/abstract_initializer.html#AbstractInitializer.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.abstract_initializer.AbstractInitializer.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify the provided states to their initial state.</p>
+<p>Default implementation does nothing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; The initial array of states to be modified.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>states</strong> &#8211; The states after having been modified by the initializer.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.abstract_rule">
+<span id="module-cellular-automata-abstract-rule"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.abstract_rule</span></code><a class="headerlink" href="#module-cellular_automata.abstract_rule" title="Permalink to this headline">¶</a></h3>
+<p>This module provides the abstract base class to use for all cellular automata
+rules.  Rules must have a step function that transforms the old states array
+to a new states array.</p>
+<dl class="class">
+<dt id="cellular_automata.abstract_rule.AbstractRule">
+<em class="property">class </em><code class="descname">AbstractRule</code><a class="reference internal" href="_modules/cellular_automata/abstract_rule.html#AbstractRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.abstract_rule.AbstractRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract bace class for cellular automata rules.</p>
+<dl class="method">
+<dt id="cellular_automata.abstract_rule.AbstractRule.check_states">
+<code class="descname">check_states</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/abstract_rule.html#AbstractRule.check_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.abstract_rule.AbstractRule.check_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the state matches what the rule expects as input.</p>
+<p>This can be used to check that the dimensionality of the state is
+expected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; An array holding the current state of the automaton.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211; If the states are not compatible with the rule.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.abstract_rule.AbstractRule.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/abstract_rule.html#AbstractRule.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.abstract_rule.AbstractRule.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the rule for a single step.</p>
+<p>The default rule does nothing but validate inputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; An array holding the current states of the automaton.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>states</strong> &#8211; The new states of the automaton after the rule has been applied.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.automata_recorder">
+<span id="module-cellular-automata-automata-recorder"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.automata_recorder</span></code><a class="headerlink" href="#module-cellular_automata.automata_recorder" title="Permalink to this headline">¶</a></h3>
+<p>This module provides tools for recording information about a cellular automata
+over time as it evolves.  This includes the <code class="xref py py-class docutils literal"><span class="pre">AutomataReader</span></code> class
+which performs the actual recording of values, and a collection of callables
+that transform states in useful ways.</p>
+<dl class="class">
+<dt id="cellular_automata.automata_recorder.AutomataRecorder">
+<em class="property">class </em><code class="descname">AutomataRecorder</code><span class="sig-paren">(</span><em>automaton=None</em>, <em>**traits</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/automata_recorder.html#AutomataRecorder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.automata_recorder.AutomataRecorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object that records changes to the states of a cellular automata.</p>
+<p>An optional <a class="reference internal" href="#cellular_automata.automata_recorder.AutomataRecorder.transform" title="cellular_automata.automata_recorder.AutomataRecorder.transform"><code class="xref py py-attr docutils literal"><span class="pre">transform</span></code></a> function can be provided that will be used
+to compute derived values from the states (such as counts of different
+states) or only recording on certain time ticks.</p>
+<p>Recording happens on changes to the the <code class="xref py py-attr docutils literal"><span class="pre">automaton.ticks</span></code> value.
+If the <a class="reference internal" href="#cellular_automata.automata_recorder.AutomataRecorder.transform" title="cellular_automata.automata_recorder.AutomataRecorder.transform"><code class="xref py py-attr docutils literal"><span class="pre">transform</span></code></a> trait is <code class="xref py py-obj docutils literal"><span class="pre">None</span></code>, then the current
+value of the automaton&#8217;s states will be added to the record.
+If the <a class="reference internal" href="#cellular_automata.automata_recorder.AutomataRecorder.transform" title="cellular_automata.automata_recorder.AutomataRecorder.transform"><code class="xref py py-attr docutils literal"><span class="pre">transform</span></code></a> trait is not <code class="xref py py-obj docutils literal"><span class="pre">None</span></code> then that will
+be called with the automaton passed to it as the only argument, and any
+non-<code class="xref py py-obj docutils literal"><span class="pre">None</span></code> value that is returned will be added to the
+<a class="reference internal" href="#cellular_automata.automata_recorder.AutomataRecorder.record" title="cellular_automata.automata_recorder.AutomataRecorder.record"><code class="xref py py-attr docutils literal"><span class="pre">record</span></code></a> list.</p>
+<dl class="method">
+<dt id="cellular_automata.automata_recorder.AutomataRecorder.as_array">
+<code class="descname">as_array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/automata_recorder.html#AutomataRecorder.as_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.automata_recorder.AutomataRecorder.as_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the record as a single stacked array.</p>
+<p>This presumes that the recorded values are all arrays with compatible
+shapes to be stacked.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.automata_recorder.AutomataRecorder.automaton">
+<code class="descname">automaton</code><em class="property"> = Instance(CellularAutomaton)</em><a class="headerlink" href="#cellular_automata.automata_recorder.AutomataRecorder.automaton" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CellularAutomaton to record.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.automata_recorder.AutomataRecorder.record">
+<code class="descname">record</code><em class="property"> = List</em><a class="headerlink" href="#cellular_automata.automata_recorder.AutomataRecorder.record" title="Permalink to this definition">¶</a></dt>
+<dd><p>The record of states.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.automata_recorder.AutomataRecorder.transform">
+<code class="descname">transform</code><em class="property"> = Callable</em><a class="headerlink" href="#cellular_automata.automata_recorder.AutomataRecorder.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to call to compute the value to record.  This should accept
+a single CellularAutomaton as an argument and return an arbitrary value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cellular_automata.automata_recorder.call_if">
+<code class="descname">call_if</code><span class="sig-paren">(</span><em>test</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/automata_recorder.html#call_if"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.automata_recorder.call_if" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator factory that records automaton state only if test is True.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>test</strong> (<em>callable</em>) &#8211; A callable that takes an automaton as input and returns a bool.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>decorator</strong> &#8211; The decorator that wraps the function with the test.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cellular_automata.automata_recorder.count_states">
+<code class="descname">count_states</code><span class="sig-paren">(</span><em>automaton</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/automata_recorder.html#count_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.automata_recorder.count_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that counts the unique states of the automata.</p>
+<p>This is suitable for use as the <code class="xref py py-attr docutils literal"><span class="pre">transform</span></code> of an
+<a class="reference internal" href="#cellular_automata.automata_recorder.AutomataRecorder" title="cellular_automata.automata_recorder.AutomataRecorder"><code class="xref py py-class docutils literal"><span class="pre">AutomataRecorder</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>automaton</strong> (<a class="reference internal" href="#cellular_automata.cellular_automaton.CellularAutomaton" title="cellular_automata.cellular_automaton.CellularAutomaton"><em>CellularAutomaton</em></a>) &#8211; The cellular automaton being analyzed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>counts</strong> &#8211; A 1D array of size 256 containing the counts of each value.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cellular_automata.automata_recorder.every_nth">
+<code class="descname">every_nth</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/automata_recorder.html#every_nth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.automata_recorder.every_nth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator factory that records automaton state every nth tick.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.automata_traits">
+<span id="module-cellular-automata-automata-traits"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.automata_traits</span></code><a class="headerlink" href="#module-cellular_automata.automata_traits" title="Permalink to this headline">¶</a></h3>
+<p>This module provides standard trait definitions for cellular automata classes.</p>
+<dl class="data">
+<dt id="cellular_automata.automata_traits.Probability">
+<code class="descname">Probability</code><em class="property"> = Range(0.0, 1.0)</em><a class="headerlink" href="#cellular_automata.automata_traits.Probability" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait that holds a valid probability.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="cellular_automata.automata_traits.StateValue">
+<code class="descname">StateValue</code><em class="property"> = Range(0, 255)</em><a class="headerlink" href="#cellular_automata.automata_traits.StateValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trait that holds a valid state value.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.initializers.constant">
+<span id="module-cellular-automata-initializers-constant"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.initializers.constant</span></code><a class="headerlink" href="#module-cellular_automata.initializers.constant" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="cellular_automata.initializers.constant.Constant">
+<em class="property">class </em><code class="descname">Constant</code><a class="reference internal" href="_modules/cellular_automata/initializers/constant.html#Constant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.initializers.constant.Constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the states to the constant initial value.</p>
+<dl class="attribute">
+<dt id="cellular_automata.initializers.constant.Constant.initial_value">
+<code class="descname">initial_value</code><em class="property"> = StateValue(0)</em><a class="headerlink" href="#cellular_automata.initializers.constant.Constant.initial_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial state value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.initializers.constant.Constant.initialize_states">
+<code class="descname">initialize_states</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/initializers/constant.html#Constant.initialize_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.initializers.constant.Constant.initialize_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the states to the constant initial value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; The initial array of states to be modified.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>states</strong> &#8211; The states after having been modified by the initializer.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.initializers.pattern_overlay">
+<span id="module-cellular-automata-initializers-pattern-overlay"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.initializers.pattern_overlay</span></code><a class="headerlink" href="#module-cellular_automata.initializers.pattern_overlay" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="cellular_automata.initializers.pattern_overlay.PatternOverlay">
+<em class="property">class </em><code class="descname">PatternOverlay</code><a class="reference internal" href="_modules/cellular_automata/initializers/pattern_overlay.html#PatternOverlay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.initializers.pattern_overlay.PatternOverlay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overlay a pattern at a specified position.</p>
+<dl class="attribute">
+<dt id="cellular_automata.initializers.pattern_overlay.PatternOverlay.pattern">
+<code class="descname">pattern</code><em class="property"> = Array(dtype='uint8')</em><a class="headerlink" href="#cellular_automata.initializers.pattern_overlay.PatternOverlay.pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pattern to overlay.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.initializers.pattern_overlay.PatternOverlay.position">
+<code class="descname">position</code><em class="property"> = Tuple((-1, -1))</em><a class="headerlink" href="#cellular_automata.initializers.pattern_overlay.PatternOverlay.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>The place to put the pattern.  If a value is -1 then place at center.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.initializers.random_choice">
+<span id="module-cellular-automata-initializers-random-choice"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.initializers.random_choice</span></code><a class="headerlink" href="#module-cellular_automata.initializers.random_choice" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="cellular_automata.initializers.random_choice.RandomChoice">
+<em class="property">class </em><code class="descname">RandomChoice</code><a class="reference internal" href="_modules/cellular_automata/initializers/random_choice.html#RandomChoice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.initializers.random_choice.RandomChoice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create initial states using a discrete random variable.</p>
+<dl class="attribute">
+<dt id="cellular_automata.initializers.random_choice.RandomChoice.distributon">
+<code class="descname">distributon</code><em class="property"> = Array(shape=(256,), dtype=float)</em><a class="headerlink" href="#cellular_automata.initializers.random_choice.RandomChoice.distributon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial values to choose from.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="cellular_automata.initializers.random_choice.RandomChoice.from_states">
+<em class="property">classmethod </em><code class="descname">from_states</code><span class="sig-paren">(</span><em>states</em>, <em>probs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/initializers/random_choice.html#RandomChoice.from_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.initializers.random_choice.RandomChoice.from_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a RandomChoice instance from states and probabilities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>list of int</em>) &#8211; The possible state values.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.initializers.random_choice.RandomChoice.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/initializers/random_choice.html#RandomChoice.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.initializers.random_choice.RandomChoice.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the states according to the rule.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; The array to initialize.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>states</strong> &#8211; The initialized array.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.initializers.random_choice.RandomChoice.random_variable">
+<code class="descname">random_variable</code><em class="property"> = Property(depends_on='distribution')</em><a class="headerlink" href="#cellular_automata.initializers.random_choice.RandomChoice.random_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>A scipy stats random variable matching the distribution.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.rules.base_rules">
+<span id="module-cellular-automata-rules-base-rules"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.rules.base_rules</span></code><a class="headerlink" href="#module-cellular_automata.rules.base_rules" title="Permalink to this headline">¶</a></h3>
+<p>A collection of base classes for common behaviour of certain rule types.</p>
+<dl class="class">
+<dt id="cellular_automata.rules.base_rules.CountNeighboursRule">
+<em class="property">class </em><code class="descname">CountNeighboursRule</code><a class="reference internal" href="_modules/cellular_automata/rules/base_rules.html#CountNeighboursRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.base_rules.CountNeighboursRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule which needs the count of neighbours.</p>
+<p>The <code class="xref py py-attr docutils literal"><span class="pre">structure</span></code> array is used to determine which cells are
+counted as neighbours.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.base_rules.CountNeighboursRule.boundary">
+<code class="descname">boundary</code><em class="property"> = Enum('empty', 'filled', 'nearest', 'wrap', 'reflect')</em><a class="headerlink" href="#cellular_automata.rules.base_rules.CountNeighboursRule.boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>The boundary mode to use.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.rules.base_rules.CountNeighboursRule.count_neighbours">
+<code class="descname">count_neighbours</code><span class="sig-paren">(</span><em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/rules/base_rules.html#CountNeighboursRule.count_neighbours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.base_rules.CountNeighboursRule.count_neighbours" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the count of the neighbours according to the mask.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cellular_automata.rules.base_rules.NDimRule">
+<em class="property">class </em><code class="descname">NDimRule</code><a class="reference internal" href="_modules/cellular_automata/rules/base_rules.html#NDimRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.base_rules.NDimRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule which expects the state to be N-dimensional.</p>
+<dl class="method">
+<dt id="cellular_automata.rules.base_rules.NDimRule.check_states">
+<code class="descname">check_states</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/rules/base_rules.html#NDimRule.check_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.base_rules.NDimRule.check_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the state has the expected dimensionality.</p>
+<p>This raises a value error if the states array&#8217;s dimension is not equal
+to the value of the <a class="reference internal" href="#cellular_automata.rules.base_rules.NDimRule.ndim" title="cellular_automata.rules.base_rules.NDimRule.ndim"><code class="xref py py-attr docutils literal"><span class="pre">ndim</span></code></a> trait.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; An array holding the current states of the automata.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211; If the states has incompatible dimension.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.base_rules.NDimRule.ndim">
+<code class="descname">ndim</code><em class="property"> = Int(2)</em><a class="headerlink" href="#cellular_automata.rules.base_rules.NDimRule.ndim" title="Permalink to this definition">¶</a></dt>
+<dd><p>The expected dimensionality of the state.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cellular_automata.rules.base_rules.StructureRule">
+<em class="property">class </em><code class="descname">StructureRule</code><a class="reference internal" href="_modules/cellular_automata/rules/base_rules.html#StructureRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.base_rules.StructureRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule which uses an n-dimensional structuring array.</p>
+<p>The dimensionality of the cellular automaton must match that of the
+<a class="reference internal" href="#cellular_automata.rules.base_rules.StructureRule.structure" title="cellular_automata.rules.base_rules.StructureRule.structure"><code class="xref py py-attr docutils literal"><span class="pre">structure</span></code></a> array.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.base_rules.StructureRule.ndim">
+<code class="descname">ndim</code><em class="property"> = Property(Int, depends_on='structure')</em><a class="headerlink" href="#cellular_automata.rules.base_rules.StructureRule.ndim" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dimension should match the dimension of the structure.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.base_rules.StructureRule.structure">
+<code class="descname">structure</code><em class="property"> = Array(dtype=bool)</em><a class="headerlink" href="#cellular_automata.rules.base_rules.StructureRule.structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>The structure to use for determining neighbours.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.rules.binary_morphology">
+<span id="module-cellular-automata-rules-binary-morphology"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.rules.binary_morphology</span></code><a class="headerlink" href="#module-cellular_automata.rules.binary_morphology" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="cellular_automata.rules.binary_morphology.BinaryMorphologyRule">
+<em class="property">class </em><code class="descname">BinaryMorphologyRule</code><a class="reference internal" href="_modules/cellular_automata/rules/binary_morphology.html#BinaryMorphologyRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.binary_morphology.BinaryMorphologyRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule that applies a morphology operation to a foreground state.</p>
+<p>Cells which were part of the foreground but are not after the operation
+are set to the specified background state value.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.binary_morphology.BinaryMorphologyRule.background_state">
+<code class="descname">background_state</code><em class="property"> = StateValue(0)</em><a class="headerlink" href="#cellular_automata.rules.binary_morphology.BinaryMorphologyRule.background_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state representing new background values.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.binary_morphology.BinaryMorphologyRule.foreground_state">
+<code class="descname">foreground_state</code><em class="property"> = StateValue(1)</em><a class="headerlink" href="#cellular_automata.rules.binary_morphology.BinaryMorphologyRule.foreground_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state representing foreground values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.rules.binary_morphology.BinaryMorphologyRule.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/rules/binary_morphology.html#BinaryMorphologyRule.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.binary_morphology.BinaryMorphologyRule.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a binary morphology operation to &#8220;foreground&#8221; state cells.</p>
+<p>Cells which were part of the foreground but are not after the operation
+are set to the specified background state value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; An array holding the current states of the automaton.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>states</strong> &#8211; The new states of the automaton after the rule has been applied.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.rules.change_state_rule">
+<span id="module-cellular-automata-rules-change-state-rule"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.rules.change_state_rule</span></code><a class="headerlink" href="#module-cellular_automata.rules.change_state_rule" title="Permalink to this headline">¶</a></h3>
+<p>The module provides a rule that changes all cells from one state to another
+with some probability.</p>
+<dl class="class">
+<dt id="cellular_automata.rules.change_state_rule.ChangeStateRule">
+<em class="property">class </em><code class="descname">ChangeStateRule</code><a class="reference internal" href="_modules/cellular_automata/rules/change_state_rule.html#ChangeStateRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.change_state_rule.ChangeStateRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change states with one value to another at some probability.</p>
+<p>This can be used to mimic random growth or death processes.  When the
+probability is one, then this can be used to</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.change_state_rule.ChangeStateRule.from_state">
+<code class="descname">from_state</code><em class="property"> = StateValue(0)</em><a class="headerlink" href="#cellular_automata.rules.change_state_rule.ChangeStateRule.from_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value to change.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.change_state_rule.ChangeStateRule.p_change">
+<code class="descname">p_change</code><em class="property"> = Probability(1.0)</em><a class="headerlink" href="#cellular_automata.rules.change_state_rule.ChangeStateRule.p_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>The probability of a cell changing value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.change_state_rule.ChangeStateRule.to_state">
+<code class="descname">to_state</code><em class="property"> = StateValue(1)</em><a class="headerlink" href="#cellular_automata.rules.change_state_rule.ChangeStateRule.to_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value to change to.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.rules.elementary_1d_rule">
+<span id="module-cellular-automata-rules-elementary-1d-rule"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.rules.elementary_1d_rule</span></code><a class="headerlink" href="#module-cellular_automata.rules.elementary_1d_rule" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule">
+<em class="property">class </em><code class="descname">Elementary1DRule</code><a class="reference internal" href="_modules/cellular_automata/rules/elementary_1d_rule.html#Elementary1DRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule implementing an elementary 1D cellular automata.</p>
+<p>This uses Wolfram&#8217;s rule numbering scheme to identify the rules and
+scipy.ndimage to handle the boundary conditions.</p>
+<p class="rubric">Notes</p>
+<p>See <a class="reference external" href="https://en.wikipedia.org/wiki/Elementary_cellular_automaton">Wikipedia</a> for further
+information on how these automata work.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.bit_mask">
+<code class="descname">bit_mask</code><em class="property"> = Property(Array(shape=(8,), dtype=bool), depends_on='rule_number')</em><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.bit_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bit-mask corresponding to the rule.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.boundary">
+<code class="descname">boundary</code><em class="property"> = Enum('empty', 'filled', 'nearest', 'wrap', 'reflect')</em><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>The boundary mode to use.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.complement">
+<code class="descname">complement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/rules/elementary_1d_rule.html#Elementary1DRule.complement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.complement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complement the cellular automata replacing 1&#8217;s with 0&#8217;s throughout.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.empty_state">
+<code class="descname">empty_state</code><em class="property"> = StateValue(0)</em><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.empty_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for &#8220;empty&#8221; cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.filled_state">
+<code class="descname">filled_state</code><em class="property"> = StateValue(1)</em><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.filled_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for &#8220;filled&#8221; cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.ndim">
+<code class="descname">ndim</code><em class="property"> = Constant(1)</em><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.ndim" title="Permalink to this definition">¶</a></dt>
+<dd><p>These are 1-dimensional only rules.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.reflect">
+<code class="descname">reflect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/rules/elementary_1d_rule.html#Elementary1DRule.reflect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.reflect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reflect the cellular automata left-to-right.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.rule_number">
+<code class="descname">rule_number</code><em class="property"> = Range(0, 255)</em><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.rule_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cellular_automata.rules.elementary_1d_rule.Elementary1DRule.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>states</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/rules/elementary_1d_rule.html#Elementary1DRule.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.elementary_1d_rule.Elementary1DRule.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the specified rule to the states.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>states</strong> (<em>array</em>) &#8211; An array holding the current states of the automata.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>states</strong> &#8211; The new states of the automata after the rule has been applied.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.rules.forest">
+<span id="module-cellular-automata-rules-forest"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.rules.forest</span></code><a class="headerlink" href="#module-cellular_automata.rules.forest" title="Permalink to this headline">¶</a></h3>
+<p>Rules that allow simple simulations of forest fire behaviour.</p>
+<dl class="class">
+<dt id="cellular_automata.rules.forest.BurnGrovesRule">
+<em class="property">class </em><code class="descname">BurnGrovesRule</code><a class="reference internal" href="_modules/cellular_automata/rules/forest.html#BurnGrovesRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.forest.BurnGrovesRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule that burns down entire burnable connected components.</p>
+<p>For this rule, first all existing fires evolve to burn out, and are
+replaced with the burnt state value. Then random cells are selected for
+the start of a fire, and where those cells are burnable, the connected
+component of the cell is set on fire. Connected components are determined
+by the connectivity structure.</p>
+<p>This rule models the effects of a fire where a partiuclar fire lasts only
+one tick but potentially covers a large area.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.BurnGrovesRule.p_fire">
+<code class="descname">p_fire</code><em class="property"> = Probability(5e-06)</em><a class="headerlink" href="#cellular_automata.rules.forest.BurnGrovesRule.p_fire" title="Permalink to this definition">¶</a></dt>
+<dd><p>The probability of a fire starting in a particular cell.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cellular_automata.rules.forest.BurnRule">
+<em class="property">class </em><code class="descname">BurnRule</code><a class="reference internal" href="_modules/cellular_automata/rules/forest.html#BurnRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.forest.BurnRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule that sets on fire burnable cells that neighbour a burning cell.</p>
+<p>Neighbouring cells are determined by a connectivity structure.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.BurnRule.burnable_state">
+<code class="descname">burnable_state</code><em class="property"> = StateValue(1)</em><a class="headerlink" href="#cellular_automata.rules.forest.BurnRule.burnable_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for burnable cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.BurnRule.burning_state">
+<code class="descname">burning_state</code><em class="property"> = StateValue(2)</em><a class="headerlink" href="#cellular_automata.rules.forest.BurnRule.burning_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for burning cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.BurnRule.burnt_state">
+<code class="descname">burnt_state</code><em class="property"> = StateValue(0)</em><a class="headerlink" href="#cellular_automata.rules.forest.BurnRule.burnt_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for burnt cells.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cellular_automata.rules.forest.MoldRule">
+<em class="property">class </em><code class="descname">MoldRule</code><a class="reference internal" href="_modules/cellular_automata/rules/forest.html#MoldRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.forest.MoldRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule that kills overcrowded cells with some probability.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.MoldRule.critical_density">
+<code class="descname">critical_density</code><em class="property"> = Int(3)</em><a class="headerlink" href="#cellular_automata.rules.forest.MoldRule.critical_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of neighbours required to make a tree susceptible to mold.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.MoldRule.dead_state">
+<code class="descname">dead_state</code><em class="property"> = StateValue(0)</em><a class="headerlink" href="#cellular_automata.rules.forest.MoldRule.dead_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for dead cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.MoldRule.live_state">
+<code class="descname">live_state</code><em class="property"> = StateValue(1)</em><a class="headerlink" href="#cellular_automata.rules.forest.MoldRule.live_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for live cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.forest.MoldRule.p_mold">
+<code class="descname">p_mold</code><em class="property"> = Probability(0.003)</em><a class="headerlink" href="#cellular_automata.rules.forest.MoldRule.p_mold" title="Permalink to this definition">¶</a></dt>
+<dd><p>The probability of death if susceptible to mold.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cellular_automata.rules.forest.SlowBurnRule">
+<em class="property">class </em><code class="descname">SlowBurnRule</code><a class="reference internal" href="_modules/cellular_automata/rules/forest.html#SlowBurnRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.forest.SlowBurnRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule that sets on fire burnable cells that neighbour a burning cell.</p>
+<p>Neighbouring cells are determined by a connectivity structure.  Cells which
+were burning but are no longer after a step is performed are replaced by
+cells with the burnt state value.</p>
+<p>This rule models the evolution of a fire, where a particular fire may last
+many ticks.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.rules.life">
+<span id="module-cellular-automata-rules-life"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.rules.life</span></code><a class="headerlink" href="#module-cellular_automata.rules.life" title="Permalink to this headline">¶</a></h3>
+<p>Rules for implementing Conway&#8217;s Game of Life and related cellular automata.</p>
+<dl class="class">
+<dt id="cellular_automata.rules.life.LifeRule">
+<em class="property">class </em><code class="descname">LifeRule</code><a class="reference internal" href="_modules/cellular_automata/rules/life.html#LifeRule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.rules.life.LifeRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rule that implements Conway&#8217;s Game of Life.</p>
+<p>Cells are either alive or dead.  On any turn, alive cells with one of
+<a class="reference internal" href="#cellular_automata.rules.life.LifeRule.survive_counts" title="cellular_automata.rules.life.LifeRule.survive_counts"><code class="xref py py-attr docutils literal"><span class="pre">survive_counts</span></code></a> neighbours remain alive, otherwise they die;
+while dead cells with one of <a class="reference internal" href="#cellular_automata.rules.life.LifeRule.born_counts" title="cellular_automata.rules.life.LifeRule.born_counts"><code class="xref py py-attr docutils literal"><span class="pre">born_counts</span></code></a> neighbours become
+alive.</p>
+<dl class="attribute">
+<dt id="cellular_automata.rules.life.LifeRule.born_counts">
+<code class="descname">born_counts</code><em class="property"> = Set(Int, {3})</em><a class="headerlink" href="#cellular_automata.rules.life.LifeRule.born_counts" title="Permalink to this definition">¶</a></dt>
+<dd><p>The neighbour counts for a cell to be born.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.life.LifeRule.dead_state">
+<code class="descname">dead_state</code><em class="property"> = StateValue(0)</em><a class="headerlink" href="#cellular_automata.rules.life.LifeRule.dead_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for dead cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.life.LifeRule.live_state">
+<code class="descname">live_state</code><em class="property"> = StateValue(1)</em><a class="headerlink" href="#cellular_automata.rules.life.LifeRule.live_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state value for live cells.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cellular_automata.rules.life.LifeRule.survive_counts">
+<code class="descname">survive_counts</code><em class="property"> = Set(Int, {2, 3})</em><a class="headerlink" href="#cellular_automata.rules.life.LifeRule.survive_counts" title="Permalink to this definition">¶</a></dt>
+<dd><p>The neighbour counts for a cell to survive.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.io.image">
+<span id="module-cellular-automata-io-image"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.io.image</span></code><a class="headerlink" href="#module-cellular_automata.io.image" title="Permalink to this headline">¶</a></h3>
+<p>This module provides some functions for outputting the state of a cellular
+automaton as images.  This relies on PIL/Pillow for saving the images.</p>
+<dl class="function">
+<dt id="cellular_automata.io.image.save_image">
+<code class="descname">save_image</code><span class="sig-paren">(</span><em>automaton</em>, <em>filename</em>, <em>palette=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/io/image.html#save_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.io.image.save_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save an automaton as an image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>automaton</strong> (<em>CellularAutomaton instance</em>) &#8211; The automaton to use to create the image.</li>
+<li><strong>filename</strong> (<em>path</em>) &#8211; The path to the file that will be used to save the image.</li>
+<li><strong>palette</strong> (<em>array of shape</em><em> (</em><em>N</em><em>, </em><em>3</em><em>)</em><em></em>) &#8211; An array of N RGB values to use for the color of each state.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cellular_automata.io.image.save_image_sequence">
+<code class="descname">save_image_sequence</code><span class="sig-paren">(</span><em>recorder</em>, <em>filename</em>, <em>palette=None</em>, <em>duration=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/io/image.html#save_image_sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.io.image.save_image_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a recorded sequence of states as an image.</p>
+<p>For 1D automata this will produce a single 2D image showing the evolution
+with later states below earlier states.  For 2D automata this will produce
+either an animated GIF if the file extension is <code class="docutils literal"><span class="pre">&quot;.gif&quot;</span></code> or a sequence
+of individual 2D images otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>recorder</strong> (<em>AutomataRecorder instance</em>) &#8211; The automaton to use to create the image.</li>
+<li><strong>filename</strong> (<em>path</em>) &#8211; The path to the file that will be used to save the image.</li>
+<li><strong>palette</strong> (<em>array of shape</em><em> (</em><em>N</em><em>, </em><em>3</em><em>)</em><em></em>) &#8211; An array of N RGB values to use for the color of each state.</li>
+<li><strong>duration</strong> (<em>int</em>) &#8211; The number of milliseconds for each frame in animated output.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cellular_automata.io.text">
+<span id="module-cellular-automata-io-text"></span><h3>Module <code class="docutils literal"><span class="pre">cellular_automata.io.text</span></code><a class="headerlink" href="#module-cellular_automata.io.text" title="Permalink to this headline">¶</a></h3>
+<p>This module provides routines to assist display of cellular automata in
+textual form.</p>
+<dl class="function">
+<dt id="cellular_automata.io.text.automaton_to_text">
+<code class="descname">automaton_to_text</code><span class="sig-paren">(</span><em>automaton</em>, <em>palette=defaultdict(&lt;function &lt;lambda&gt;&gt;</em>, <em>{0: ' '})</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cellular_automata/io/text.html#automaton_to_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cellular_automata.io.text.automaton_to_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a text representation of the automaton states.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>automaton</strong> (<em>CellularAutomaton instance</em>) &#8211; The automaton to render.</li>
+<li><strong>palette</strong> (<em>str</em>) &#8211; A string in which the symbol of the nth character will be used to
+represent the nth state.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>text</strong> &#8211; The textual representation of the state of the automaton.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/img/e-logo.png" alt="Logo">
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Cellular Automata Library</a><ul>
+<li><a class="reference internal" href="#module-cellular_automata">Cellular Automata Library Documentation</a><ul>
+<li><a class="reference internal" href="#module-cellular_automata.cellular_automaton">Module <code class="docutils literal"><span class="pre">cellular_automata.cellular_automaton</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.abstract_initializer">Module <code class="docutils literal"><span class="pre">cellular_automata.abstract_initializer</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.abstract_rule">Module <code class="docutils literal"><span class="pre">cellular_automata.abstract_rule</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.automata_recorder">Module <code class="docutils literal"><span class="pre">cellular_automata.automata_recorder</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.automata_traits">Module <code class="docutils literal"><span class="pre">cellular_automata.automata_traits</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.initializers.constant">Module <code class="docutils literal"><span class="pre">cellular_automata.initializers.constant</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.initializers.pattern_overlay">Module <code class="docutils literal"><span class="pre">cellular_automata.initializers.pattern_overlay</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.initializers.random_choice">Module <code class="docutils literal"><span class="pre">cellular_automata.initializers.random_choice</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.rules.base_rules">Module <code class="docutils literal"><span class="pre">cellular_automata.rules.base_rules</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.rules.binary_morphology">Module <code class="docutils literal"><span class="pre">cellular_automata.rules.binary_morphology</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.rules.change_state_rule">Module <code class="docutils literal"><span class="pre">cellular_automata.rules.change_state_rule</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.rules.elementary_1d_rule">Module <code class="docutils literal"><span class="pre">cellular_automata.rules.elementary_1d_rule</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.rules.forest">Module <code class="docutils literal"><span class="pre">cellular_automata.rules.forest</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.rules.life">Module <code class="docutils literal"><span class="pre">cellular_automata.rules.life</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.io.image">Module <code class="docutils literal"><span class="pre">cellular_automata.io.image</span></code></a></li>
+<li><a class="reference internal" href="#module-cellular_automata.io.text">Module <code class="docutils literal"><span class="pre">cellular_automata.io.text</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="todo-list.html"
+                        title="previous chapter">To-do List Application</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="i18n.html"
+                        title="next chapter">Internationalization and Localization</a></p>
+  <h3>This Page</h3>
+  <div>
+    <a href="_sources/cellular-automata.rst.txt"
+       rel="nofollow">Show Source</a>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

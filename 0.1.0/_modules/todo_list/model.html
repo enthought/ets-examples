@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>todo_list.model &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="../../_static/img/favicon.ico">
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="../../index.html" >
+    <link rel="up" title="Module code" href="../index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">ETS Examples 0.1.0 documentation</a></li>
+	
+          <li class="active"><a href="../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for todo_list.model</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2017, Enthought, Inc.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is provided without warranty under the terms of the BSD</span>
+<span class="c1"># license included in LICENSE.txt and may be redistributed only</span>
+<span class="c1"># under the conditions described in the aforementioned license.  The license</span>
+<span class="c1"># is also available online at http://www.enthought.com/licenses/BSD.txt</span>
+<span class="c1">#</span>
+<span class="c1"># Thanks for using Enthought open source!</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides two classes that together provide the business logic for</span>
+<span class="sd">a simple to-do list application.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Bool</span><span class="p">,</span> <span class="n">HasStrictTraits</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">on_trait_change</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ToDoItem"><a class="viewcode-back" href="../../todo-list.html#todo_list.model.ToDoItem">[docs]</a><span class="k">class</span> <span class="nc">ToDoItem</span><span class="p">(</span><span class="n">HasStrictTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A task in a to-do list.</span>
+
+<span class="sd">    A to-do item has a description and a completed flag as its state.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The description of the task.</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">Str</span>
+
+    <span class="c1">#: Whether or no the task has been completed.</span>
+    <span class="n">completed</span> <span class="o">=</span> <span class="n">Bool</span></div>
+
+
+<div class="viewcode-block" id="ToDoList"><a class="viewcode-back" href="../../todo-list.html#todo_list.model.ToDoList">[docs]</a><span class="k">class</span> <span class="nc">ToDoList</span><span class="p">(</span><span class="n">HasStrictTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A list of tasks that need to be done.</span>
+
+<span class="sd">    This provides a list of :py:class:`ToDoItem` instances, as well as a list</span>
+<span class="sd">    of the remaining items and the count of the remaining items.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This demonstrates both using :py:func:`on_trait_change` and Traits</span>
+<span class="sd">    :py:class:`Property` handlers to handle re-computation based on updates</span>
+<span class="sd">    for pedagogical reasons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The list of tasks that we want to perform.</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">List</span><span class="p">(</span><span class="n">Instance</span><span class="p">(</span><span class="n">ToDoItem</span><span class="p">,</span> <span class="p">()))</span>
+
+    <span class="c1">#: The list of items that still need to be completed.</span>
+    <span class="n">remaining_items</span> <span class="o">=</span> <span class="n">List</span><span class="p">(</span><span class="n">Instance</span><span class="p">(</span><span class="n">ToDoItem</span><span class="p">))</span>
+
+    <span class="c1">#: The number of remaining items.</span>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="n">Int</span><span class="p">,</span> <span class="n">depends_on</span><span class="o">=</span><span class="s1">&#39;remaining_items&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Trait handlers ---------------------------------------------------------</span>
+
+    <span class="nd">@on_trait_change</span><span class="p">(</span><span class="s1">&#39;items.completed&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remaining_items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">completed</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_remaining</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remaining_items</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/img/e-logo.png" alt="Logo">
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

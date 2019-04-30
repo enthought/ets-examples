@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>todo_list.view &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="../../_static/img/favicon.ico">
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="../../index.html" >
+    <link rel="up" title="Module code" href="../index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">ETS Examples 0.1.0 documentation</a></li>
+	
+          <li class="active"><a href="../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for todo_list.view</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2017, Enthought, Inc.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is provided without warranty under the terms of the BSD</span>
+<span class="c1"># license included in LICENSE.txt and may be redistributed only</span>
+<span class="c1"># under the conditions described in the aforementioned license.  The license</span>
+<span class="c1"># is also available online at http://www.enthought.com/licenses/BSD.txt</span>
+<span class="c1">#</span>
+<span class="c1"># Thanks for using Enthought open source!</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides the UI classes that provide the UI logic and views for</span>
+<span class="sd">a simple to-do list application.  This is a fairly simple UI, with each item</span>
+<span class="sd">displayed in a list editor, and a toggle to allow the user to switch between</span>
+<span class="sd">seeing all items or just the remaining items.  This also shows a basic action</span>
+<span class="sd">which is available as a menu item and a button.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Button</span><span class="p">,</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">on_trait_change</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">traitsui.api</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">ButtonEditor</span><span class="p">,</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">HGroup</span><span class="p">,</span> <span class="n">InstanceEditor</span><span class="p">,</span> <span class="n">Item</span><span class="p">,</span> <span class="n">ListEditor</span><span class="p">,</span>
+    <span class="n">ModelView</span><span class="p">,</span> <span class="n">Spring</span><span class="p">,</span> <span class="n">VGroup</span><span class="p">,</span> <span class="n">View</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">traitsui.menu</span> <span class="k">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">ActionGroup</span><span class="p">,</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">MenuBar</span>
+
+<span class="kn">from</span> <span class="nn">.model</span> <span class="k">import</span> <span class="n">ToDoItem</span><span class="p">,</span> <span class="n">ToDoList</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># TraitsUI Actions and Menus</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<span class="n">new_item_action</span> <span class="o">=</span> <span class="n">Action</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;New Item&#39;</span><span class="p">,</span>
+    <span class="n">action</span><span class="o">=</span><span class="s1">&#39;new_item&#39;</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="o">=</span><span class="s1">&#39;Ctrl++&#39;</span>
+<span class="p">)</span>
+
+<span class="n">menubar</span> <span class="o">=</span> <span class="n">MenuBar</span><span class="p">(</span>
+    <span class="n">Menu</span><span class="p">(</span>
+        <span class="n">ActionGroup</span><span class="p">(</span><span class="n">new_item_action</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;list_group&#39;</span><span class="p">),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Edit&#39;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># TraitsUI Views</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<span class="c1">#: Stripped down view for use in list editor</span>
+<span class="n">to_do_item_view</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span>
+    <span class="n">HGroup</span><span class="p">(</span>
+        <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="n">show_label</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="n">show_label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">springy</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;controller.delete&#39;</span><span class="p">,</span><span class="n">show_label</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+
+<span class="c1">#: View for main model view</span>
+<span class="n">todo_list_view</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span>
+    <span class="n">VGroup</span><span class="p">(</span>
+        <span class="n">HGroup</span><span class="p">(</span>
+            <span class="n">Item</span><span class="p">(</span>
+                <span class="s1">&#39;remaining&#39;</span><span class="p">,</span>
+                <span class="n">style</span><span class="o">=</span><span class="s1">&#39;readonly&#39;</span><span class="p">,</span>
+                <span class="n">show_label</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">Spring</span><span class="p">(),</span>
+            <span class="n">Item</span><span class="p">(</span><span class="s1">&#39;display_selection&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Show:&#39;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">Item</span><span class="p">(</span>
+            <span class="s1">&#39;displayed_items&#39;</span><span class="p">,</span>
+            <span class="n">show_label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="s1">&#39;readonly&#39;</span><span class="p">,</span>
+            <span class="n">springy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">editor</span><span class="o">=</span><span class="n">ListEditor</span><span class="p">(</span>
+                <span class="n">style</span><span class="o">=</span><span class="s1">&#39;custom&#39;</span><span class="p">,</span>
+                <span class="n">editor</span><span class="o">=</span><span class="n">InstanceEditor</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">to_do_item_view</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">),</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;To Do List&quot;</span><span class="p">,</span>
+    <span class="n">buttons</span><span class="o">=</span><span class="p">[</span><span class="n">new_item_action</span><span class="p">],</span>
+    <span class="n">menubar</span><span class="o">=</span><span class="n">menubar</span><span class="p">,</span>
+    <span class="n">resizable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">480</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">640</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># TraitsUI Handlers</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ToDoItemController"><a class="viewcode-back" href="../../todo-list.html#todo_list.view.ToDoItemController">[docs]</a><span class="k">class</span> <span class="nc">ToDoItemController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A controller for list items in the view</span>
+
+<span class="sd">    We need this to add a &#39;delete&#39; button to the view, which we can&#39;t do</span>
+<span class="sd">    from the item by itself.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The item being displayed</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">ToDoItem</span><span class="p">)</span>
+
+    <span class="c1">#: The todo list being displayed in the larger view</span>
+    <span class="n">todo_list</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">ToDoList</span><span class="p">)</span>
+
+    <span class="c1">#: A button to trigger removal.</span>
+    <span class="n">delete</span> <span class="o">=</span> <span class="n">Button</span>
+
+    <span class="c1"># Trait handlers ---------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_delete_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">todo_list</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ToDoListModelView"><a class="viewcode-back" href="../../todo-list.html#todo_list.view.ToDoListModelView">[docs]</a><span class="k">class</span> <span class="nc">ToDoListModelView</span><span class="p">(</span><span class="n">ModelView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A ModelView for the ToDoList</span>
+
+<span class="sd">    This ModelView allows the user to switch the view between the list of all</span>
+<span class="sd">    items and the list of remaining items, as well as add new items.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The todo list that we are using as the model.</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">ToDoList</span><span class="p">)</span>
+
+    <span class="c1">#: Whether we want to see all items, or just the remaining items.</span>
+    <span class="n">display_selection</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;remaining&#39;</span><span class="p">)</span>
+
+    <span class="c1">#: The list of items that we are actually viewing.</span>
+    <span class="n">displayed_items</span> <span class="o">=</span> <span class="n">List</span><span class="p">(</span><span class="n">Instance</span><span class="p">(</span><span class="n">ToDoItemController</span><span class="p">))</span>
+
+    <span class="c1">#: A human-friendly string reporting the number of items remaining</span>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="n">Str</span><span class="p">,</span> <span class="n">depends_on</span><span class="o">=</span><span class="s1">&#39;model.remaining&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Action handlers --------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ToDoListModelView.new_item"><a class="viewcode-back" href="../../todo-list.html#todo_list.view.ToDoListModelView.new_item">[docs]</a>    <span class="k">def</span> <span class="nf">new_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ui_info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Handle an &quot;New Item&quot; action.</span>
+
+<span class="sd">        This simply adds a new, empty item to the model&#39;s items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_item</span> <span class="o">=</span> <span class="n">ToDoItem</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_item</span><span class="p">)</span></div>
+
+    <span class="c1"># Trait handlers ---------------------------------------------------------</span>
+
+    <span class="nd">@on_trait_change</span><span class="p">(</span><span class="s1">&#39;model.items.completed,display_selection&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_update_displayed_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># handle situation where model may be None temporarily</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_selection</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">items</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">remaining_items</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">displayed_items</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ToDoItemController</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">todo_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_remaining</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">remaining</span>
+        <span class="k">if</span> <span class="n">remaining</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;No items remaining&#39;</span>
+        <span class="k">elif</span> <span class="n">remaining</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;1 item remaining&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> items remaining&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span>
+
+    <span class="c1"># Default TraitsUI view --------------------------------------------------</span>
+
+    <span class="n">traits_view</span> <span class="o">=</span> <span class="n">todo_list_view</span></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/img/e-logo.png" alt="Logo">
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

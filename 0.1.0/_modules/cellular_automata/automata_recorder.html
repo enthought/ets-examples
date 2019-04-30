@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>cellular_automata.automata_recorder &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="../../_static/img/favicon.ico">
+    <link rel="index" title="Index" href="../../genindex.html" >
+    <link rel="search" title="Search" href="../../search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="../../index.html" >
+    <link rel="up" title="Module code" href="../index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">ETS Examples 0.1.0 documentation</a></li>
+	
+          <li class="active"><a href="../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for cellular_automata.automata_recorder</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017, Enthought, Inc.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is provided without warranty under the terms of the BSD</span>
+<span class="c1"># license included in LICENSE.txt and may be redistributed only</span>
+<span class="c1"># under the conditions described in the aforementioned license.  The license</span>
+<span class="c1"># is also available online at http://www.enthought.com/licenses/BSD.txt</span>
+<span class="c1">#</span>
+<span class="c1"># Thanks for using Enthought open source!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides tools for recording information about a cellular automata</span>
+<span class="sd">over time as it evolves.  This includes the :py:class:`AutomataReader` class</span>
+<span class="sd">which performs the actual recording of values, and a collection of callables</span>
+<span class="sd">that transform states in useful ways.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">HasStrictTraits</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">on_trait_change</span>
+
+<span class="kn">from</span> <span class="nn">.cellular_automaton</span> <span class="k">import</span> <span class="n">CellularAutomaton</span>
+
+
+<div class="viewcode-block" id="AutomataRecorder"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.automata_recorder.AutomataRecorder">[docs]</a><span class="k">class</span> <span class="nc">AutomataRecorder</span><span class="p">(</span><span class="n">HasStrictTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; An object that records changes to the states of a cellular automata.</span>
+
+<span class="sd">    An optional :py:attr:`transform` function can be provided that will be used</span>
+<span class="sd">    to compute derived values from the states (such as counts of different</span>
+<span class="sd">    states) or only recording on certain time ticks.</span>
+
+<span class="sd">    Recording happens on changes to the the :py:attr:`automaton.ticks` value.</span>
+<span class="sd">    If the :py:attr:`transform` trait is :py:obj:`None`, then the current</span>
+<span class="sd">    value of the automaton&#39;s states will be added to the record.</span>
+<span class="sd">    If the :py:attr:`transform` trait is not :py:obj:`None` then that will</span>
+<span class="sd">    be called with the automaton passed to it as the only argument, and any</span>
+<span class="sd">    non-:py:obj:`None` value that is returned will be added to the</span>
+<span class="sd">    :py:attr:`record` list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The CellularAutomaton to record.</span>
+    <span class="n">automaton</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">CellularAutomaton</span><span class="p">)</span>
+
+    <span class="c1">#: The record of states.</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="n">List</span>
+
+    <span class="c1">#: A function to call to compute the value to record.  This should accept</span>
+    <span class="c1">#: a single CellularAutomaton as an argument and return an arbitrary value.</span>
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">Callable</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># AutomataRecorder interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="AutomataRecorder.as_array"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.automata_recorder.AutomataRecorder.as_array">[docs]</a>    <span class="k">def</span> <span class="nf">as_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the record as a single stacked array.</span>
+
+<span class="sd">        This presumes that the recorded values are all arrays with compatible</span>
+<span class="sd">        shapes to be stacked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="p">)</span></div>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># object interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">automaton</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">traits</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AutomataRecorder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">traits</span><span class="p">)</span>
+        <span class="c1"># ensure that the automaton is set _after_ everything is set up</span>
+        <span class="c1"># this means in particular that we get first state if it is not None.</span>
+        <span class="k">if</span> <span class="n">automaton</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">automaton</span> <span class="o">=</span> <span class="n">automaton</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># Private interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_record</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Record the (possibly transformed) states.</span>
+
+<span class="sd">        If the :py:attr:`transform` trait is not :py:obj:`None` then that will</span>
+<span class="sd">        be called with the automaton passed to it as the only argument, and any</span>
+<span class="sd">        non-:py:obj:`None` value that is returned will be added to the</span>
+<span class="sd">        :py:attr:`record` list.</span>
+
+<span class="sd">        Subclasses that want to do something more sophisticated can override</span>
+<span class="sd">        this method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        states : array</span>
+<span class="sd">            The states that will be recorded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">automaton</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">automaton</span><span class="o">.</span><span class="n">states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">automaton</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">automaton</span><span class="o">.</span><span class="n">states</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># Trait change handlers --------------------------------------------------</span>
+
+    <span class="nd">@on_trait_change</span><span class="p">(</span><span class="s1">&#39;automaton:tick&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_time_updated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">automaton</span><span class="o">.</span><span class="n">tick</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># automaton was reset, dump</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">()</span>
+
+    <span class="nd">@on_trait_change</span><span class="p">(</span><span class="s1">&#39;automaton&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_automaton_updated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">automaton</span><span class="p">):</span>
+        <span class="c1"># reset the record for the new automaton</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">record</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="count_states"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.automata_recorder.count_states">[docs]</a><span class="k">def</span> <span class="nf">count_states</span><span class="p">(</span><span class="n">automaton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A function that counts the unique states of the automata.</span>
+
+<span class="sd">    This is suitable for use as the :py:attr:`transform` of an</span>
+<span class="sd">    :py:class:`AutomataRecorder`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    automaton : CellularAutomaton</span>
+<span class="sd">        The cellular automaton being analyzed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    counts : array</span>
+<span class="sd">        A 1D array of size 256 containing the counts of each value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">states</span>
+    <span class="n">uniques</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">full_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">full_counts</span><span class="p">[</span><span class="n">uniques</span><span class="p">]</span> <span class="o">=</span> <span class="n">counts</span>
+    <span class="k">return</span> <span class="n">full_counts</span></div>
+
+
+<div class="viewcode-block" id="call_if"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.automata_recorder.call_if">[docs]</a><span class="k">def</span> <span class="nf">call_if</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator factory that records automaton state only if test is True.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    test : callable</span>
+<span class="sd">        A callable that takes an automaton as input and returns a bool.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    decorator : function</span>
+<span class="sd">        The decorator that wraps the function with the test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Decorator that records automaton state every only if test is True. &quot;&quot;&quot;</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">automaton</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">test</span><span class="p">(</span><span class="n">automaton</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">automaton</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="every_nth"><a class="viewcode-back" href="../../cellular-automata.html#cellular_automata.automata_recorder.every_nth">[docs]</a><span class="k">def</span> <span class="nf">every_nth</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Decorator factory that records automaton state every nth tick. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">is_nth</span><span class="p">(</span><span class="n">automaton</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">automaton</span><span class="o">.</span><span class="n">tick</span> <span class="o">%</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">call_if</span><span class="p">(</span><span class="n">is_nth</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/img/e-logo.png" alt="Logo">
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

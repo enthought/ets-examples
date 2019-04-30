@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>cellular_automata.rules.life &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../../_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="../../../_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="../../../_static/img/favicon.ico">
+    <link rel="index" title="Index" href="../../../genindex.html" >
+    <link rel="search" title="Search" href="../../../search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="../../../index.html" >
+    <link rel="up" title="Module code" href="../../index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../../index.html">ETS Examples 0.1.0 documentation</a></li>
+	
+          <li class="active"><a href="../../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for cellular_automata.rules.life</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017, Enthought, Inc.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is provided without warranty under the terms of the BSD</span>
+<span class="c1"># license included in LICENSE.txt and may be redistributed only</span>
+<span class="c1"># under the conditions described in the aforementioned license.  The license</span>
+<span class="c1"># is also available online at http://www.enthought.com/licenses/BSD.txt</span>
+<span class="c1">#</span>
+<span class="c1"># Thanks for using Enthought open source!</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Rules for implementing Conway&#39;s Game of Life and related cellular automata.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="k">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span> <span class="nn">cellular_automata.automata_traits</span> <span class="k">import</span> <span class="n">StateValue</span>
+<span class="kn">from</span> <span class="nn">.base_rules</span> <span class="k">import</span> <span class="n">CountNeighboursRule</span>
+
+
+<div class="viewcode-block" id="LifeRule"><a class="viewcode-back" href="../../../cellular-automata.html#cellular_automata.rules.life.LifeRule">[docs]</a><span class="k">class</span> <span class="nc">LifeRule</span><span class="p">(</span><span class="n">CountNeighboursRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A rule that implements Conway&#39;s Game of Life.</span>
+
+<span class="sd">    Cells are either alive or dead.  On any turn, alive cells with one of</span>
+<span class="sd">    :py:attr:`survive_counts` neighbours remain alive, otherwise they die;</span>
+<span class="sd">    while dead cells with one of :py:attr:`born_counts` neighbours become</span>
+<span class="sd">    alive.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The state value for dead cells.</span>
+    <span class="n">dead_state</span> <span class="o">=</span> <span class="n">StateValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1">#: The state value for live cells.</span>
+    <span class="n">live_state</span> <span class="o">=</span> <span class="n">StateValue</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1">#: The neighbour counts for a cell to be born.</span>
+    <span class="n">born_counts</span> <span class="o">=</span> <span class="n">Set</span><span class="p">(</span><span class="n">Int</span><span class="p">,</span> <span class="p">{</span><span class="mi">3</span><span class="p">})</span>
+
+    <span class="c1">#: The neighbour counts for a cell to survive.</span>
+    <span class="n">survive_counts</span> <span class="o">=</span> <span class="n">Set</span><span class="p">(</span><span class="n">Int</span><span class="p">,</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">})</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># AbstractRule interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">LifeRule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+        <span class="n">live</span> <span class="o">=</span> <span class="p">(</span><span class="n">states</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">live_state</span><span class="p">)</span>
+
+        <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_neighbours</span><span class="p">(</span><span class="n">live</span><span class="p">)</span>
+        <span class="n">count_masks</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">born</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">born_counts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">count_masks</span><span class="p">:</span>
+                <span class="n">count_masks</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">counts</span> <span class="o">==</span> <span class="n">count</span><span class="p">)</span>
+            <span class="n">born</span> <span class="o">|=</span> <span class="n">count_masks</span><span class="p">[</span><span class="n">count</span><span class="p">]</span>
+        <span class="n">born</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">live</span>
+
+        <span class="n">survived</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">survive_counts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">count_masks</span><span class="p">:</span>
+                <span class="n">count_masks</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">counts</span> <span class="o">==</span> <span class="n">count</span><span class="p">)</span>
+            <span class="n">survived</span> <span class="o">|=</span> <span class="n">count_masks</span><span class="p">[</span><span class="n">count</span><span class="p">]</span>
+        <span class="n">died</span> <span class="o">=</span> <span class="n">live</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">survived</span>
+
+        <span class="n">states</span><span class="p">[</span><span class="n">born</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">live_state</span>
+        <span class="n">states</span><span class="p">[</span><span class="n">died</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dead_state</span>
+
+        <span class="k">return</span> <span class="n">states</span></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/img/e-logo.png" alt="Logo">
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

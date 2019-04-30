@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>ToDo-List Application &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
+    <link rel="stylesheet" href="_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="_static/img/favicon.ico">
+    <link rel="index" title="Index" href="genindex.html" >
+    <link rel="search" title="Search" href="search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="index.html">ETS Examples 0.1.0 documentation</a></li>
+	 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="todo-list-application">
+<h1>ToDo-List Application<a class="headerlink" href="#todo-list-application" title="Permalink to this headline">¶</a></h1>
+<p>In this example, we build a more substantial ToDo list application.</p>
+<div class="section" id="design">
+<h2>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<p>Before writing any code, we would like a high-level design of the
+sorts of data we want to store and the operations we want to be able
+to perform on it.</p>
+<p>As in our previous example, the core object will be a container class
+that holds a list of objects that represent items that need to be done.
+Each item has a state (whether completed or not), a brief text that
+describes it, optional more detailed description, a priority and an
+optional due date and time.  We&#8217;d like the user to be able to modify
+all of this state for any given item.</p>
+<p>For each list, we want to be able to add and remove items, as well as
+re-order them, including sorting the lists in various ways</p>
+<p>We&#8217;d like the application to be able to have multiple of these lists
+open, and be able to move items between the lists.</p>
+<p>We want full undo/redo integration, so we&#8217;ll use the apptools.undo
+infrastructure to handle changes of state via the command pattern.</p>
+<div class="section" id="interactive-api">
+<h3>Interactive API<a class="headerlink" href="#interactive-api" title="Permalink to this headline">¶</a></h3>
+<p>It&#8217;s common to want to write code interactively using the Python
+prompt or an Jupyter Notebook to manipulate object state.  While</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/img/e-logo.png" alt="Logo">
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ToDo-List Application</a><ul>
+<li><a class="reference internal" href="#design">Design</a><ul>
+<li><a class="reference internal" href="#interactive-api">Interactive API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <div>
+    <a href="_sources/todo-list-app.rst.txt"
+       rel="nofollow">Show Source</a>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

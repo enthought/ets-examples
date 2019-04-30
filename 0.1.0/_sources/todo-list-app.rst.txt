@@ -1,0 +1,36 @@
+=====================
+ToDo-List Application
+=====================
+
+In this example, we build a more substantial ToDo list application.
+
+Design
+======
+
+Before writing any code, we would like a high-level design of the
+sorts of data we want to store and the operations we want to be able
+to perform on it.
+
+As in our previous example, the core object will be a container class
+that holds a list of objects that represent items that need to be done.
+Each item has a state (whether completed or not), a brief text that
+describes it, optional more detailed description, a priority and an
+optional due date and time.  We'd like the user to be able to modify
+all of this state for any given item.
+
+For each list, we want to be able to add and remove items, as well as
+re-order them, including sorting the lists in various ways
+
+We'd like the application to be able to have multiple of these lists
+open, and be able to move items between the lists.
+
+We want full undo/redo integration, so we'll use the apptools.undo
+infrastructure to handle changes of state via the command pattern.
+
+
+Interactive API
+---------------
+
+It's common to want to write code interactively using the Python
+prompt or an Jupyter Notebook to manipulate object state.  While
+

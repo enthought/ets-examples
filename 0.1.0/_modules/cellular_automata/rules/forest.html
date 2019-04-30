@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>cellular_automata.rules.forest &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../../_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="../../../_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="../../../_static/img/favicon.ico">
+    <link rel="index" title="Index" href="../../../genindex.html" >
+    <link rel="search" title="Search" href="../../../search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="../../../index.html" >
+    <link rel="up" title="Module code" href="../../index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../../index.html">ETS Examples 0.1.0 documentation</a></li>
+	
+          <li class="active"><a href="../../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for cellular_automata.rules.forest</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017, Enthought, Inc.</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># This software is provided without warranty under the terms of the BSD</span>
+<span class="c1"># license included in LICENSE.txt and may be redistributed only</span>
+<span class="c1"># under the conditions described in the aforementioned license.  The license</span>
+<span class="c1"># is also available online at http://www.enthought.com/licenses/BSD.txt</span>
+<span class="c1">#</span>
+<span class="c1"># Thanks for using Enthought open source!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Rules that allow simple simulations of forest fire behaviour.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">ndimage</span>
+
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="k">import</span> <span class="n">Int</span>
+
+<span class="kn">from</span> <span class="nn">cellular_automata.automata_traits</span> <span class="k">import</span> <span class="n">Probability</span><span class="p">,</span> <span class="n">StateValue</span>
+<span class="kn">from</span> <span class="nn">.base_rules</span> <span class="k">import</span> <span class="n">CountNeighboursRule</span><span class="p">,</span> <span class="n">StructureRule</span>
+
+
+<span class="c1">#: The default structure to use for fires.  The central cell is blank to model</span>
+<span class="c1">#: the fire burning out after one tick.</span>
+<span class="n">FIRE_STRUCTURE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BurnRule"><a class="viewcode-back" href="../../../cellular-automata.html#cellular_automata.rules.forest.BurnRule">[docs]</a><span class="k">class</span> <span class="nc">BurnRule</span><span class="p">(</span><span class="n">StructureRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A rule that sets on fire burnable cells that neighbour a burning cell.</span>
+
+<span class="sd">    Neighbouring cells are determined by a connectivity structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># BurnRule Traits --------------------------------------------------------</span>
+
+    <span class="c1">#: The state value for burnt cells.</span>
+    <span class="n">burnt_state</span> <span class="o">=</span> <span class="n">StateValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1">#: The state value for burnable cells.</span>
+    <span class="n">burnable_state</span> <span class="o">=</span> <span class="n">StateValue</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1">#: The state value for burning cells.</span>
+    <span class="n">burning_state</span> <span class="o">=</span> <span class="n">StateValue</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># Private interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_structure_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">FIRE_STRUCTURE</span></div>
+
+
+<div class="viewcode-block" id="SlowBurnRule"><a class="viewcode-back" href="../../../cellular-automata.html#cellular_automata.rules.forest.SlowBurnRule">[docs]</a><span class="k">class</span> <span class="nc">SlowBurnRule</span><span class="p">(</span><span class="n">BurnRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A rule that sets on fire burnable cells that neighbour a burning cell.</span>
+
+<span class="sd">    Neighbouring cells are determined by a connectivity structure.  Cells which</span>
+<span class="sd">    were burning but are no longer after a step is performed are replaced by</span>
+<span class="sd">    cells with the burnt state value.</span>
+
+<span class="sd">    This rule models the evolution of a fire, where a particular fire may last</span>
+<span class="sd">    many ticks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># AbstractRule interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SlowBurnRule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+
+        <span class="n">burning</span> <span class="o">=</span> <span class="p">(</span><span class="n">states</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">burning_state</span><span class="p">)</span>
+        <span class="n">burnable_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">states</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">burnable_state</span><span class="p">)</span>
+
+        <span class="n">new_burning</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span>
+            <span class="n">burning</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">burnable_mask</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">states</span><span class="p">[</span><span class="n">new_burning</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">burning_state</span>
+        <span class="n">states</span><span class="p">[</span><span class="n">burning</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">burnt_state</span>
+
+        <span class="k">return</span> <span class="n">states</span></div>
+
+
+<div class="viewcode-block" id="BurnGrovesRule"><a class="viewcode-back" href="../../../cellular-automata.html#cellular_automata.rules.forest.BurnGrovesRule">[docs]</a><span class="k">class</span> <span class="nc">BurnGrovesRule</span><span class="p">(</span><span class="n">BurnRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A rule that burns down entire burnable connected components.</span>
+
+<span class="sd">    For this rule, first all existing fires evolve to burn out, and are</span>
+<span class="sd">    replaced with the burnt state value. Then random cells are selected for</span>
+<span class="sd">    the start of a fire, and where those cells are burnable, the connected</span>
+<span class="sd">    component of the cell is set on fire. Connected components are determined</span>
+<span class="sd">    by the connectivity structure.</span>
+
+<span class="sd">    This rule models the effects of a fire where a partiuclar fire lasts only</span>
+<span class="sd">    one tick but potentially covers a large area.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># BurnGrovesRule Traits --------------------------------------------------</span>
+
+    <span class="c1">#: The probability of a fire starting in a particular cell.</span>
+    <span class="n">p_fire</span> <span class="o">=</span> <span class="n">Probability</span><span class="p">(</span><span class="mf">5e-6</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># AbstractRule interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">BurnGrovesRule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+
+        <span class="n">burnable</span> <span class="o">=</span> <span class="p">(</span><span class="n">states</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">burnable_state</span><span class="p">)</span>
+        <span class="n">strikes</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">states</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_fire</span><span class="p">)</span>
+        <span class="n">groves</span><span class="p">,</span> <span class="n">num_groves</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">burnable</span><span class="p">)</span>
+
+        <span class="n">burning_groves</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">groves</span><span class="p">[</span><span class="n">strikes</span> <span class="o">&amp;</span> <span class="n">burnable</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">grove</span> <span class="ow">in</span> <span class="n">burning_groves</span><span class="p">:</span>
+            <span class="n">states</span><span class="p">[</span><span class="n">groves</span> <span class="o">==</span> <span class="n">grove</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">burning_state</span>
+
+        <span class="k">return</span> <span class="n">states</span></div>
+
+
+<div class="viewcode-block" id="MoldRule"><a class="viewcode-back" href="../../../cellular-automata.html#cellular_automata.rules.forest.MoldRule">[docs]</a><span class="k">class</span> <span class="nc">MoldRule</span><span class="p">(</span><span class="n">CountNeighboursRule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A rule that kills overcrowded cells with some probability. &quot;&quot;&quot;</span>
+
+    <span class="c1"># MoldRule Traits --------------------------------------------------------</span>
+
+    <span class="c1">#: The state value for dead cells.</span>
+    <span class="n">dead_state</span> <span class="o">=</span> <span class="n">StateValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1">#: The state value for live cells.</span>
+    <span class="n">live_state</span> <span class="o">=</span> <span class="n">StateValue</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1">#: The number of neighbours required to make a tree susceptible to mold.</span>
+    <span class="n">critical_density</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1">#: The probability of death if susceptible to mold.</span>
+    <span class="n">p_mold</span> <span class="o">=</span> <span class="n">Probability</span><span class="p">(</span><span class="mf">3e-3</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># AbstractRule interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MoldRule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+
+        <span class="n">live</span> <span class="o">=</span> <span class="p">(</span><span class="n">states</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">live_state</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_neighbours</span><span class="p">(</span><span class="n">live</span><span class="p">)</span>
+
+        <span class="n">mold</span> <span class="o">=</span> <span class="n">live</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">count</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_density</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_mold</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">mold</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">states</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_mold</span><span class="p">)</span>
+
+        <span class="n">states</span><span class="p">[</span><span class="n">mold</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dead_state</span>
+
+        <span class="k">return</span> <span class="n">states</span>
+
+    <span class="c1"># ------------------------------------------------------------------------</span>
+    <span class="c1"># Private interface</span>
+    <span class="c1"># ------------------------------------------------------------------------</span>
+
+    <span class="c1"># Trait defaults ---------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_structure_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">FIRE_STRUCTURE</span></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/img/e-logo.png" alt="Logo">
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

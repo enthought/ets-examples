@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>To-do List Application &mdash; ETS Examples 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="_static/css/spc-extend.css">
+    <link rel="stylesheet" href="_static/enthought.css" type="text/css" >
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/copybutton.js"></script>
+    <script type="text/javascript" src="_static/js/wrap_on_dot.js"></script>
+    <link rel="shortcut icon" href="_static/img/favicon.ico">
+    <link rel="index" title="Index" href="genindex.html" >
+    <link rel="search" title="Search" href="search.html" >
+    <link rel="top" title="ETS Examples 0.1.0 documentation" href="index.html" >
+    <link rel="next" title="Cellular Automata Library" href="cellular-automata.html" >
+    <link rel="prev" title="ETS Examples" href="index.html" > 
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="index.html">ETS Examples 0.1.0 documentation</a></li>
+	 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="cellular-automata.html" title="Cellular Automata Library"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="index.html" title="ETS Examples"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="to-do-list-application">
+<h1>To-do List Application<a class="headerlink" href="#to-do-list-application" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="_images/todo-list.png"><img alt="_images/todo-list.png" src="_images/todo-list.png" style="height: 435px;" /></a>
+<div class="section" id="to-do-list">
+<h2>To-do List<a class="headerlink" href="#to-do-list" title="Permalink to this headline">¶</a></h2>
+<p>This is a very simple Traits and TraitsUI application that provides a to-do
+list and a GUI that goes with it.  This example demonstrates:</p>
+<ul class="simple">
+<li>a Traits model for &#8220;business logic&#8221;.</li>
+<li>using TraitsUI with a Model-View-ViewModel architecture.</li>
+<li>TraitsUI handlers.</li>
+<li>simple TraitsUI Action usage.</li>
+</ul>
+<p>While complete, it doesn&#8217;t provide any means of loading or saving data, and
+isn&#8217;t intended for &#8220;real-world&#8221; use.</p>
+<div class="section" id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p>You can create an appropriate environment with the following
+<a class="reference external" href="http://docs.enthought.com/edm/">EDM commands</a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">edm</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">todo</span><span class="o">-</span><span class="nb">list</span> <span class="n">traitsui</span> <span class="n">pyqt</span>
+<span class="n">edm</span> <span class="n">run</span> <span class="o">-</span><span class="n">e</span> <span class="n">todo</span><span class="o">-</span><span class="nb">list</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>and you can switch into that environment with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">edm</span> <span class="n">shell</span> <span class="o">-</span><span class="n">e</span> <span class="n">todo</span><span class="o">-</span><span class="nb">list</span>
+</pre></div>
+</div>
+<p>If you prefer to use <code class="docutils literal"><span class="pre">pip</span></code>, you can install into an existing environment
+with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span><span class="p">[</span><span class="n">pyqt</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>Once installed in an active environment, the application ise run via the
+<code class="docutils literal"><span class="pre">todo-list</span></code> command.  Initial to-do items can be specified via one or more
+<code class="docutils literal"><span class="pre">--todo</span></code> commandline arguments, eg.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">todo</span><span class="o">-</span><span class="nb">list</span> <span class="o">--</span><span class="n">todo</span> <span class="s2">&quot;first thing&quot;</span> <span class="o">--</span><span class="n">todo</span> <span class="s2">&quot;second thing&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="design-notes">
+<h3>Design Notes<a class="headerlink" href="#design-notes" title="Permalink to this headline">¶</a></h3>
+<p>The application is built around the standard Model-View-ViewModel architecture.
+The model consists of two classes, one for each list item and one for the list
+as a whole, and is found in <a class="reference internal" href="#module-todo_list.model" title="todo_list.model"><code class="xref py py-mod docutils literal"><span class="pre">todo_list.model</span></code></a>.  The views and
+modelviews are found in the <a class="reference internal" href="#module-todo_list.view" title="todo_list.view"><code class="xref py py-mod docutils literal"><span class="pre">todo_list.view</span></code></a> module, and match the
+model structure, having one view and one modelview each for the list items and
+list as a whole.</p>
+<p>The main application entrypoint is in the <a class="reference internal" href="#module-todo_list.app" title="todo_list.app"><code class="xref py py-mod docutils literal"><span class="pre">todo_list.app</span></code></a> module which
+does basic argument parsing to set up the model, and then calls
+<code class="xref py py-meth docutils literal"><span class="pre">configure_traits()</span></code> on the modelview.</p>
+</div>
+<div class="section" id="license">
+<h3>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h3>
+<p>This software is provided without warranty under the terms of the BSD
+license included in LICENSE.txt and may be redistributed only
+under the conditions described in the aforementioned license.  The license
+is also available online at <a class="reference external" href="http://www.enthought.com/licenses/BSD.txt">http://www.enthought.com/licenses/BSD.txt</a></p>
+</div>
+</div>
+<div class="section" id="module-todo_list">
+<span id="to-do-list-documentation"></span><h2>To-do List Documentation<a class="headerlink" href="#module-todo_list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-todo_list.app">
+<span id="module-todo-list-app-application-main"></span><h3>Module <code class="docutils literal"><span class="pre">todo_list.app</span></code>: Application Main<a class="headerlink" href="#module-todo_list.app" title="Permalink to this headline">¶</a></h3>
+<p>This module provides the application infrastructure to run the to-do list
+application.  It parses command-line arguments into to do items and starts
+the TraitsUI application.</p>
+<dl class="function">
+<dt id="todo_list.app.handle_arguments">
+<code class="descname">handle_arguments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/todo_list/app.html#handle_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#todo_list.app.handle_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse commandline arguments and return list of items</p>
+<p>Allowed arguments are as many <code class="docutils literal"><span class="pre">--todo</span></code> optional arguments followed
+by the text of an item.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="todo_list.app.main">
+<code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/todo_list/app.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#todo_list.app.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>The application entry-point</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-todo_list.model">
+<span id="module-todo-list-model-to-do-list-model-classes"></span><h3>Module <code class="docutils literal"><span class="pre">todo_list.model</span></code> : To-Do List Model Classes<a class="headerlink" href="#module-todo_list.model" title="Permalink to this headline">¶</a></h3>
+<p>This module provides two classes that together provide the business logic for
+a simple to-do list application.</p>
+<dl class="class">
+<dt id="todo_list.model.ToDoItem">
+<em class="property">class </em><code class="descname">ToDoItem</code><a class="reference internal" href="_modules/todo_list/model.html#ToDoItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#todo_list.model.ToDoItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>A task in a to-do list.</p>
+<p>A to-do item has a description and a completed flag as its state.</p>
+<dl class="attribute">
+<dt id="todo_list.model.ToDoItem.completed">
+<code class="descname">completed</code><em class="property"> = Bool</em><a class="headerlink" href="#todo_list.model.ToDoItem.completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether or no the task has been completed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.model.ToDoItem.description">
+<code class="descname">description</code><em class="property"> = Str</em><a class="headerlink" href="#todo_list.model.ToDoItem.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>The description of the task.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="todo_list.model.ToDoList">
+<em class="property">class </em><code class="descname">ToDoList</code><a class="reference internal" href="_modules/todo_list/model.html#ToDoList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#todo_list.model.ToDoList" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of tasks that need to be done.</p>
+<p>This provides a list of <a class="reference internal" href="#todo_list.model.ToDoItem" title="todo_list.model.ToDoItem"><code class="xref py py-class docutils literal"><span class="pre">ToDoItem</span></code></a> instances, as well as a list
+of the remaining items and the count of the remaining items.</p>
+<p class="rubric">Notes</p>
+<p>This demonstrates both using <code class="xref py py-func docutils literal"><span class="pre">on_trait_change()</span></code> and Traits
+<code class="xref py py-class docutils literal"><span class="pre">Property</span></code> handlers to handle re-computation based on updates
+for pedagogical reasons.</p>
+<dl class="attribute">
+<dt id="todo_list.model.ToDoList.items">
+<code class="descname">items</code><em class="property"> = List(Instance(ToDoItem, ()))</em><a class="headerlink" href="#todo_list.model.ToDoList.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of tasks that we want to perform.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.model.ToDoList.remaining">
+<code class="descname">remaining</code><em class="property"> = Property(Int, depends_on='remaining_items')</em><a class="headerlink" href="#todo_list.model.ToDoList.remaining" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of remaining items.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.model.ToDoList.remaining_items">
+<code class="descname">remaining_items</code><em class="property"> = List(Instance(ToDoItem))</em><a class="headerlink" href="#todo_list.model.ToDoList.remaining_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of items that still need to be completed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-todo-list-view-to-do-list-ui-classes">
+<h3>Module <code class="docutils literal"><span class="pre">todo_list.view</span></code> : To-Do List UI Classes<a class="headerlink" href="#module-todo-list-view-to-do-list-ui-classes" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-todo_list.view"></span><p>This module provides the UI classes that provide the UI logic and views for
+a simple to-do list application.  This is a fairly simple UI, with each item
+displayed in a list editor, and a toggle to allow the user to switch between
+seeing all items or just the remaining items.  This also shows a basic action
+which is available as a menu item and a button.</p>
+<dl class="data">
+<dt id="todo_list.view.to_do_item_view">
+<code class="descname">to_do_item_view</code><em class="property"> = TraitsUI View instance</em><a class="headerlink" href="#todo_list.view.to_do_item_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="todo_list.view.todo_list_view">
+<code class="descname">todo_list_view</code><em class="property"> = TraitsUI View instance</em><a class="headerlink" href="#todo_list.view.todo_list_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="todo_list.view.ToDoItemController">
+<em class="property">class </em><code class="descname">ToDoItemController</code><span class="sig-paren">(</span><em>model=None</em>, <em>**metadata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/todo_list/view.html#ToDoItemController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#todo_list.view.ToDoItemController" title="Permalink to this definition">¶</a></dt>
+<dd><p>A controller for list items in the view</p>
+<p>We need this to add a &#8216;delete&#8217; button to the view, which we can&#8217;t do
+from the item by itself.</p>
+<dl class="attribute">
+<dt id="todo_list.view.ToDoItemController.delete">
+<code class="descname">delete</code><em class="property"> = Button</em><a class="headerlink" href="#todo_list.view.ToDoItemController.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>A button to trigger removal.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.view.ToDoItemController.model">
+<code class="descname">model</code><em class="property"> = Instance(ToDoItem)</em><a class="headerlink" href="#todo_list.view.ToDoItemController.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>The item being displayed</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.view.ToDoItemController.todo_list">
+<code class="descname">todo_list</code><em class="property"> = Instance(ToDoList)</em><a class="headerlink" href="#todo_list.view.ToDoItemController.todo_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>The todo list being displayed in the larger view</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="todo_list.view.ToDoListModelView">
+<em class="property">class </em><code class="descname">ToDoListModelView</code><span class="sig-paren">(</span><em>model=None</em>, <em>**metadata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/todo_list/view.html#ToDoListModelView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#todo_list.view.ToDoListModelView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A ModelView for the ToDoList</p>
+<p>This ModelView allows the user to switch the view between the list of all
+items and the list of remaining items, as well as add new items.</p>
+<dl class="attribute">
+<dt id="todo_list.view.ToDoListModelView.display_selection">
+<code class="descname">display_selection</code><em class="property"> = Enum('all', 'remaining')</em><a class="headerlink" href="#todo_list.view.ToDoListModelView.display_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether we want to see all items, or just the remaining items.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.view.ToDoListModelView.displayed_items">
+<code class="descname">displayed_items</code><em class="property"> = List(Instance(ToDoItemController))</em><a class="headerlink" href="#todo_list.view.ToDoListModelView.displayed_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of items that we are actually viewing.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.view.ToDoListModelView.model">
+<code class="descname">model</code><em class="property"> = Instance(ToDoList)</em><a class="headerlink" href="#todo_list.view.ToDoListModelView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>The todo list that we are using as the model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="todo_list.view.ToDoListModelView.new_item">
+<code class="descname">new_item</code><span class="sig-paren">(</span><em>ui_info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/todo_list/view.html#ToDoListModelView.new_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#todo_list.view.ToDoListModelView.new_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle an &#8220;New Item&#8221; action.</p>
+<p>This simply adds a new, empty item to the model&#8217;s items.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="todo_list.view.ToDoListModelView.remaining">
+<code class="descname">remaining</code><em class="property"> = Property(Str, depends_on='model.remaining')</em><a class="headerlink" href="#todo_list.view.ToDoListModelView.remaining" title="Permalink to this definition">¶</a></dt>
+<dd><p>A human-friendly string reporting the number of items remaining</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<p>If you are learning how to work with Traits and TraitsUI, working through these
+exercises may be illuminating.</p>
+<ol class="arabic">
+<li><p class="first">Extend the <a class="reference internal" href="#todo_list.model.ToDoItem" title="todo_list.model.ToDoItem"><code class="xref py py-class docutils literal"><span class="pre">todo_list.model.ToDoItem</span></code></a> class to include an optional
+due date.  The default value of the due date should be a week from the
+current day.</p>
+<p>Hint: The <code class="xref py py-class docutils literal"><span class="pre">Date</span></code> trait is useful here.</p>
+</li>
+<li><p class="first">Extend the <a class="reference internal" href="#todo_list.model.ToDoList" title="todo_list.model.ToDoList"><code class="xref py py-class docutils literal"><span class="pre">todo_list.model.ToDoList</span></code></a> class to additionally
+provide a property containing the list of all overdue items, that is items
+which are not complete and which have a due date before the current due
+date.</p>
+</li>
+<li><p class="first">Extend the user interface to expose the due date and overdue items in a
+user-friendly manner.  You should allow the user to:</p>
+<ul class="simple">
+<li>toggle whether or not any given item has a due date and allow them to set
+it if there is one in the <a class="reference internal" href="#todo_list.view.ToDoItemController" title="todo_list.view.ToDoItemController"><code class="xref py py-class docutils literal"><span class="pre">todo_list.view.ToDoItemController</span></code></a>
+class,</li>
+<li>select whether they want to view all the items, the remaining items, or
+just the overdue items, and whether the items should be sorted by due date
+or not.</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+          </div>
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/img/e-logo.png" alt="Logo">
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">To-do List Application</a><ul>
+<li><a class="reference internal" href="#to-do-list">To-do List</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#design-notes">Design Notes</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-todo_list">To-do List Documentation</a><ul>
+<li><a class="reference internal" href="#module-todo_list.app">Module <code class="docutils literal"><span class="pre">todo_list.app</span></code>: Application Main</a></li>
+<li><a class="reference internal" href="#module-todo_list.model">Module <code class="docutils literal"><span class="pre">todo_list.model</span></code> : To-Do List Model Classes</a></li>
+<li><a class="reference internal" href="#module-todo-list-view-to-do-list-ui-classes">Module <code class="docutils literal"><span class="pre">todo_list.view</span></code> : To-Do List UI Classes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">ETS Examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cellular-automata.html"
+                        title="next chapter">Cellular Automata Library</a></p>
+  <h3>This Page</h3>
+  <div>
+    <a href="_sources/todo-list.rst.txt"
+       rel="nofollow">Show Source</a>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, Enthought Developers
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.5.5.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
