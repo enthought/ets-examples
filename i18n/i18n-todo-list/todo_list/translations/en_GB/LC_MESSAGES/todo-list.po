@@ -1,0 +1,66 @@
+# Translations template for Internationalized ToDo List.
+# Copyright (C) 2019 Enthought
+# This file is distributed under the same license as the ETS Examples project.
+# Corran Webster <info@enthought.com>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: info@enthought.com\n"
+"POT-Creation-Date: 2019-06-05 15:26+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+"Plural-Forms: nplurals=2; plural=1;"
+
+#: todo_list/app.py:39
+msgid "To-do list TraitsUI application."
+msgstr "To-do list TraitsUI application."
+
+#: todo_list/app.py:44
+msgid "to-do list item"
+msgstr "to-do list item"
+
+#: todo_list/app.py:45
+msgid "ITEM"
+msgstr "ITEM"
+
+#: todo_list/view.py:48
+msgid "New Item"
+msgstr "New Item"
+
+#: todo_list/view.py:56
+msgid "Edit"
+msgstr "Edit"
+
+#: todo_list/view.py:81
+msgid "Delete"
+msgstr "Delete"
+
+#: todo_list/view.py:99
+msgid "Show"
+msgstr "Show"
+
+#: todo_list/view.py:102
+msgid "All"
+msgstr "All"
+
+#: todo_list/view.py:103
+msgid "Remaining"
+msgstr "Remaining"
+
+#: todo_list/view.py:119
+msgid "To Do List"
+msgstr ""
+
+#: todo_list/view.py:203
+msgid "{remaining} item remaining"
+msgid_plural "{remaining} items remaining"
+msgstr[0] "{remaining} item remaining"
+msgstr[1] "{remaining} items remaining"
+

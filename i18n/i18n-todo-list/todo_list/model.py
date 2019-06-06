@@ -1,0 +1,75 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2017, Enthought, Inc.
+# All rights reserved.
+#
+# This software is provided without warranty under the terms of the BSD
+# license included in LICENSE.txt and may be redistributed only
+# under the conditions described in the aforementioned license.  The license
+# is also available online at http://www.enthought.com/licenses/BSD.txt
+#
+# Thanks for using Enthought open source!
+
+"""
+This module provides two classes that together provide the business logic for
+a simple to-do list application.
+"""
+
+import datetime
+
+from traits.api import (
+    Bool, Date, HasStrictTraits, Instance, Int, List, Property, Str,
+    on_trait_change
+)
+
+
+class ToDoItem(HasStrictTraits):
+    """ A task in a to-do list.
+
+    A to-do item has a description and a completed flag as its state.
+    """
+
+    #: The description of the task.
+    description = Str
+
+    #: When the task was created.
+    creation_time = Date
+
+    #: Whether or no the task has been completed.
+    completed = Bool
+
+    def _creation_time_default(self):
+        return datetime.datetime.now()
+
+
+class ToDoList(HasStrictTraits):
+    """ A list of tasks that need to be done.
+
+    This provides a list of :py:class:`ToDoItem` instances, as well as a list
+    of the remaining items and the count of the remaining items.
+
+    Notes
+    -----
+    This demonstrates both using :py:func:`on_trait_change` and Traits
+    :py:class:`Property` handlers to handle re-computation based on updates
+    for pedagogical reasons.
+    """
+
+    #: The list of tasks that we want to perform.
+    items = List(Instance(ToDoItem, ()))
+
+    #: The list of items that still need to be completed.
+    remaining_items = List(Instance(ToDoItem))
+
+    #: The number of remaining items.
+    remaining = Property(Int, depends_on='remaining_items')
+
+    # Trait handlers ---------------------------------------------------------
+
+    @on_trait_change('items.completed')
+    def update(self):
+        self.remaining_items = [item for item in self.items
+                                if not item.completed]
+
+    def _get_remaining(self):
+        return len(self.remaining_items)
