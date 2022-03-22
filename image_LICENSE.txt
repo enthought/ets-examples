@@ -1,0 +1,19 @@
+Some of the icons and images in this project are derived from other
+open-source image libraries:
+
+Project                 License                   File
+----------------------------------------------------------------------------
+Material Design         Apache License 2.0        image_LICENSE_Material.txt
+Enthought               BSD 3-Clause              LICENSE.txt
+
+Unless stated in this file, icons and images are the work of Enthought, and are
+released under the same 3 clause BSD license as the code.
+
+Files and orginal authors:
+----------------------------------------------------------------------------
+snippets/images:
+                        denoise.png | Material Design
+                flip_horizontal.png | Material Design
+                  flip_vertical.png | Material Design
+                    rotate_left.png | Material Design
+                   rotate_right.png | Material Design
